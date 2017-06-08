@@ -1,15 +1,15 @@
 puts 'Здравствуйте. Введите значения коэффициентов: '
 print '1 => '
-a = gets.chomp.to_i
+a = gets.chomp.to_f
 print '2 => '
-b = gets.chomp.to_i
+b = gets.chomp.to_f
 print '3 => '
-c = gets.chomp.to_i
+c = gets.chomp.to_f
 
 discr = (b**2 - 4 * a * c)
 
 if discr > 0
-  discr_sqrt = Math.sqrt(discr).to_i
+  discr_sqrt = Math.sqrt(discr)
   x1 = (-b + discr_sqrt) / (2 * a)
   x2 = (-b - discr_sqrt) / (2 * a)
   puts "Квадратное уравнение имеет два корня х1: #{x1} и х2: #{x2}. Дискриминант: #{discr}"

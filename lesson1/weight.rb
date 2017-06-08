@@ -1,9 +1,9 @@
 print 'Здравствуйте. Введите Ваше имя: '
 name = gets.chomp.capitalize!
-print 'Введите Ваш вес: '
-weight = gets.chomp
+print 'Введите Ваш рост: '
+weight = gets.chomp.to_f
 
-opt_weight = weight.to_i - 110
+opt_weight = weight - 110
 
 if opt_weight < 0
   puts "#{name}, Ваш вес уже в норме."

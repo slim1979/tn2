@@ -1,6 +1,6 @@
 print 'Здравствуйте. Введите основание треугольника: '
-base = gets.chomp
+base = gets.chomp.to_f
 print 'Введите высоту треугольника: '
-height = gets.chomp
+height = gets.chomp.to_f
 
-puts "Площадь треугольника составит - #{0.5 * base.to_i * height.to_i}"
+puts "Площадь треугольника составит - #{0.5 * base * height}"

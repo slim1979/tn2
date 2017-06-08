@@ -1,10 +1,10 @@
 puts 'Здравствуйте. Введите значения сторон треугольника: '
 print '1 => '
-a = gets.chomp.to_i
+a = gets.chomp.to_f
 print '2 => '
-b = gets.chomp.to_i
+b = gets.chomp.to_f
 print '3 => '
-c = gets.chomp.to_i
+c = gets.chomp.to_f
 
 #массив для сторон треугольника
 arr = []
@@ -15,7 +15,7 @@ arr.sort!
 if (a < b + c) && (a > b - c) && (b < a + c) && (b > a - c) && (c < a + b) && (c > a - b)
   puts 'Вы ввели правильные размеры треугольника.'
 
-#вычисление минимальных и максимальных значений
+#получение минимальных и максимальных значений
   min1 = arr[0]
   min2 = arr[1]
   max = arr[2]
@@ -29,13 +29,14 @@ if (a < b + c) && (a > b - c) && (b < a + c) && (b > a - c) && (c < a + b) && (c
     adv_info = ''
   end
 #вычисление типа треугольника
-  if max.to_i**2 == min1.to_i**2 + min2.to_i**2
+  if max**2 == min1**2 + min2**2
     puts 'Этот треугольник прямоугольный' + adv_info
-  elsif max.to_i**2 < min1.to_i**2 + min2.to_i**2
+  elsif max**2 < min1**2 + min2**2
     puts 'Этот треугольник остроугольный' + adv_info
   else
     puts 'Этот треугольник тупоугольный' + adv_info
   end
+
 else
   puts 'С такими сторонами треугольник не получается.'
   puts "Третья сторона в этом треугольнике должна равняться #{Math.sqrt(a**2 + b**2).to_i}"
