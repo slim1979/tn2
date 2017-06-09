@@ -4,11 +4,11 @@ puts '**************************************************************************
 puts 'Привествую Вас на нашем сайте. Выбирайте, что понравится.'
 puts 'Если решите проверить корзину или приобрести выбранное, наберите stop в наименовании товара.'
 puts 'Удачных покупок!'
+puts
 
 loop do
 
   loop do
-    puts
     print 'Введите название товара: '
     @goods = gets.chomp
     break unless @goods.empty?
@@ -19,13 +19,13 @@ loop do
     loop do
       print 'Введите количество: '
       @amount = gets.chomp.to_f
-      break unless @amount.zero?
+      break unless @amount.zero? || @amount < 0
     end
 
     loop do
       print 'Почем брали?): '
       @price = gets.chomp.to_f
-      break unless @price.zero?
+      break unless @price.zero? || @price < 0
     end
 
     info = { amount: @amount, price: @price }
@@ -47,6 +47,7 @@ loop do
     print 'Продолжить покупки? (д/н) '
     continue = gets.chomp.downcase
     if continue == 'y' || continue == 'д'
+      puts
     else
       puts
       puts '********************************'
