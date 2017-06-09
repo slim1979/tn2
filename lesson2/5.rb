@@ -20,7 +20,7 @@ count = 0
 arr.each do |key, value|
   count += value if key < month
 end
-puts count + day
+puts "Этот день в году #{count + day} по счету"
 
 # обработка неправильного ввода
 else
