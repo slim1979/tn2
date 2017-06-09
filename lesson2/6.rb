@@ -14,26 +14,7 @@ loop do
     break unless @goods.empty?
   end
 
-  unless @goods == 'stop'
-
-    loop do
-      print 'Введите количество: '
-      @amount = gets.chomp.to_f
-      break unless @amount.zero? || @amount < 0
-    end
-
-    loop do
-      print 'Почем брали?): '
-      @price = gets.chomp.to_f
-      break unless @price.zero? || @price < 0
-    end
-
-    puts
-
-    info = { amount: @amount, price: @price }
-    list[@goods] = info
-
-  else
+  if @goods == 'stop'
     man_with_last_name_itogo = 0
     puts
     puts '********************************'
@@ -56,6 +37,22 @@ loop do
       puts "Общая сумма Вашего заказа #{man_with_last_name_itogo} руб"
       break
     end
-  end
+  else
+    loop do
+      print 'Введите количество: '
+      @amount = gets.chomp.to_f
+      break unless @amount.zero? || @amount < 0
+    end
 
+    loop do
+      print 'Почем брали?): '
+      @price = gets.chomp.to_f
+      break unless @price.zero? || @price < 0
+    end
+
+    puts
+
+    info = { amount: @amount, price: @price }
+    list[@goods] = info
+  end
 end
