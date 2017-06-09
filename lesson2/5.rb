@@ -1,5 +1,4 @@
-arr = { 1 => 31, 2 => 28, 3 => 31, 4 => 30, 5 => 31, 6 => 30,
-        7 => 31, 8 => 31, 9 => 30, 10 => 31, 11 => 30, 12 => 31 }
+arr = %i[ 31 28 31 30 31 30 31 31 30 31 30 31 ]
 
 puts 'Введите дату в формате ДД.ММ.ГГГГ:'
 print 'день: '
@@ -13,7 +12,7 @@ year = gets.chomp.to_i
 if !day.zero? && day > 0 && day < 32 && !month.zero? && month > 0 && month < 13 && !year.zero? && year > 0
 
 # поправка на високосный год
-arr['02'] = 29 if (year % 4).zero? || (year % 400).zero?
+arr[1] = 29 if (year % 4).zero? || (year % 400).zero?
 count = 0
 
 # магия Ruby
