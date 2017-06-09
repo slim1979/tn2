@@ -10,7 +10,7 @@ loop do
 
   loop do
     print 'Введите название товара: '
-    @goods = gets.chomp
+    @goods = gets.chomp.strip
     break unless @goods.empty?
   end
 
@@ -29,7 +29,7 @@ loop do
     end
 
     puts
-    
+
     info = { amount: @amount, price: @price }
     list[@goods] = info
 
