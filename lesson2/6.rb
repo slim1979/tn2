@@ -1,10 +1,15 @@
 list = {}
+puts
+puts '********************************************************************************************'
+puts 'Привествую Вас на нашем сайте. Выбирайте, что понравится.'
+puts 'Если решите проверить корзину или приобрести выбранное, наберите stop в наименовании товара.'
+puts 'Удачных покупок!'
 
 loop do
 
   loop do
     puts
-    print 'Товар: '
+    print 'Введите название товара: '
     @goods = gets.chomp
     break unless @goods.empty?
   end
@@ -12,13 +17,13 @@ loop do
   unless @goods == 'stop'
 
     loop do
-      print 'Кол-во: '
+      print 'Введите количество: '
       @amount = gets.chomp.to_f
       break unless @amount.zero?
     end
 
     loop do
-      print 'Цена за единицу: '
+      print 'Почем брали?): '
       @price = gets.chomp.to_f
       break unless @price.zero?
     end
