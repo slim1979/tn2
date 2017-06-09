@@ -5,4 +5,3 @@ hash = {}
 letters.each do |letter|
   hash[letter] = range.index letter if range.include? letter
 end
-puts hash
