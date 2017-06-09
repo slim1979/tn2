@@ -28,6 +28,8 @@ loop do
       break unless @price.zero? || @price < 0
     end
 
+    puts
+    
     info = { amount: @amount, price: @price }
     list[@goods] = info
 
