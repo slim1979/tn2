@@ -24,11 +24,11 @@ end
 
 # class Route
 class Route
-  @@all_routes = []
+  @@all_routes = {}
   @@route_counter = 0
 
   def initialize(start_point, end_point)
-    @@all_routes[@@route_counter] = "Маршрут ##{@@route_counter+1}", start_point, end_point
+    @@all_routes["route#{@@route_counter+1}"] =  start_point, end_point
     @@route_counter += 1
   end
 
@@ -36,28 +36,30 @@ class Route
     @@all_routes
   end
 
-  def add(route_number, waypoint)
-    @@all_routes[route_number - 1].insert(-2, waypoint)
+  def add(route_name, waypoint)
+    @@all_routes[route_name].insert(-2, waypoint)
   end
 
-  def delete(route_number, waypoint)
-    @@all_routes[route_number - 1].delete(waypoint)
+  def delete(route_name, waypoint)
+    @@all_routes[route_name].delete(waypoint)
   end
 
-  def list(route_number)
-    @@all_routes[route_number - 1].each_with_index do |waypoint, i|
+  def list(route_name)
+    @@all_routes[route_name].each_with_index do |waypoint, i|
       i == 0 ? (puts waypoint) : (puts "#{i}.#{waypoint}")
     end
   end
 
-  def choise(route_number)
-    @@all_routes[route_number - 1]
+  def choise(route_name)
+    @@all_routes[route_name]
   end
+
 end
 
 class Train
 
   @@train = {}
+  @@move = 0
 
   def initialize(number, type, vans_amount)
     @@train['number'] = number
@@ -66,7 +68,10 @@ class Train
   end
 
   def move
-    @@a
+    @@move += 1
+    # для того, чтобы наш паровоз гонял по кругу, обнуляем счетчик на конечной и разворачиваем маршрут
+    @@train['route'].reverse! && @@move = 0 if @@move == @@train['route'].length
+    puts "Moving to: #{@@train['route'][@@move]}, #{@direct}"
   end
 
   def info
@@ -75,8 +80,12 @@ class Train
 
   def route(route)
     @@train['route'] = route
+    puts @@train
   end
 
+  def current_station
+    puts "Current st: #{@@train['route'][@@move]}"
+  end
 end
 
 # # создаем рандомные станции, чтобы не руками.
@@ -100,3 +109,16 @@ end
 # else
 #   puts 'Проверьте правильность написания станций'
 # end
+#
+route = Route.new('1', '5')
+route.add 'route1', '2'
+route.add 'route1', '3'
+route.add 'route1', '4'
+
+train = Train.new(123, 'passenger', 15)
+train.route(route.choise 'route1')
+loop do
+  train.current_station
+  train.move
+  gets
+end
