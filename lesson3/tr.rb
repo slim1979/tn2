@@ -39,6 +39,10 @@ class Station
       puts "#{station} --> #{depo}" unless depo['trains'].empty?
     end
   end
+
+  def trains_kind(station)
+
+  end
 end
 
 # class Route
@@ -212,7 +216,10 @@ def create_world
   @route.add('route1', 'ccc')
   @route.add('route1', 'eee')
   @route.add('route1', 'fff')
-  @train.route(12, @route.choose('route1'))
+end
+
+def assignment_route(train, route)
+  @train.route(train, @route.choose(route))
   @station.train_arrival(@train.now(train), train)
 end
 
