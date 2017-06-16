@@ -1,4 +1,6 @@
-arr = %w[31 28 31 30 31 30 31 31 30 31 30 31]
+
+arr = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
 
 puts 'Введите дату в формате ДД.ММ.ГГГГ:'
 print 'день: '
@@ -18,7 +20,9 @@ if !day.zero? && day > 0 && day < 32 && !month.zero? && month > 0 && month < 13 
   i = 1
 
   while i < month
-    count += arr[i-1].to_i
+
+    count += arr[i-1]
+
     i += 1
   end
 
