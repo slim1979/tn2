@@ -27,7 +27,11 @@ class Route
   end
 
   def delete(station)
-    @route.delete(station)
+    if @route.include? station
+      @route.delete(station)
+    else
+      "Station #{station} is not exist in this route"
+    end
   end
 
   def list
@@ -39,6 +43,7 @@ end
 
 class Train
   attr_accessor :route
+  attr_reader :vans, :type
 
   def initialize(train, type, vans)
     @train = train
@@ -94,16 +99,8 @@ class Train
     end
   end
 
-  def vans
-    @vans
-  end
-
   def name
     @train
-  end
-
-  def type
-    @type
   end
 
   def location
