@@ -1,103 +1,119 @@
 class Station
-
-  attr_accessor :trains
-
   def initialize(station)
     @station = station
-    @trains = []
+    @trains = {}
   end
 
-  def add(train)
-    @trains << train
+  def train_arrival(train)
+    @trains[train.name] = train.type
   end
 
-  def delete(train)
+  def train_departure(train)
     @trains.delete(train)
   end
 
-  def type
-    @trains.each { |train| train[type] }
+  def sort_trains_by_type
+    @trains.sort_by { |_train, type| type }
   end
 end
 
 class Route
-  attr_accessor :route
-
-  def initialize(route, start_point, end_point)
-    @route = route
-    @route = []
-    @route << start_point << end_point
+  def initialize(start_point, end_point)
+    @route = [start_point, end_point]
   end
 
-  def all
-    @route
+  def add(station)
+    @route.insert(-2, station)
   end
 
-  def add(waypoint)
-    @route.insert(-2, waypoint)
+  def delete(station)
+    @route.delete(station)
   end
 
-  def delete(route, waypoint)
-    @route.delete(waypoint)
-  end
-
-  def list(route)
-    @route.each_with_index do |waypoint, i|
-      i.zero? ? (puts waypoint) : (puts "#{i}.#{waypoint}")
+  def list
+    @route.each_with_index do |station, i|
+      puts "#{i + 1}.#{station}"
     end
-  end
-
-  def choose
-    @route
   end
 end
 
 class Train
-  attr_accessor :train
-  @@move = 0
+  attr_accessor :route
+
   def initialize(train, type, vans)
     @train = train
-    @train = {}
-    @train['type'] = type
-    @train['vans'] = vans
-    @train['route'] = {}
-    @train['status'] = 'stopped'
-    @train['speed'] = 0
-  end
-
-  def go(speed)
-    @train['status'] = 'moving'
-    @train['speed'] = speed
-  end
-
-  def stop
-    @train['status'] = 'stopped'
-    @train['speed'] = 0
+    @type = type
+    @vans = vans
+    @route = []
+    @speed = 0
+    @move = 0
+    @global_move = 0
   end
 
   def increase_speed(speed)
-    @train['speed'] += speed
+    @speed += speed
   end
 
   def decrease_speed(speed)
-    @train['speed'] -= speed
+    if @speed - speed > 0
+      @speed -= speed
+    else
+      'Speed cant be negative'
+    end
+  end
+
+  def stop
+    @speed = 0
   end
 
   def increase_vans(vans)
-    @train['vans'] += vans
+    @vans += vans if @speed.zero?
   end
 
   def decrease_vans(vans)
-    @train['vans'] -= vans
+    @vans -= vans if @vans - vans >= 0 && @speed.zero?
   end
 
   def move_forward
-    @@move += 1
-    @train['route'][@@move]
+    if @route.empty?
+      puts 'Route not found'
+    else
+      @move += 1
+      @route.reverse! && @move = 1 if @move == @route.length
+      @route[@move]
+    end
   end
 
   def move_backward
-    @@move -= 1
-    @train['route'][@@move]
+    if @route.empty?
+      puts 'Route not found'
+    else
+      @move -= 1
+      @route.reverse! && @move = @route.length - 2 if @move < 0
+      @route[@move]
+    end
+  end
+
+  def vans
+    @vans
+  end
+
+  def name
+    @train
+  end
+
+  def type
+    @type
+  end
+
+  def location
+    if @global_move < 1
+      puts "Now in #{@route[@move]}"
+      puts "Going to #{@route[@move + 1]}"
+    else
+      puts "Was in #{@route[@move - 1]}"
+      puts "Now in #{@route[@move]}"
+      puts "Going to #{@route[@move + 1]}"
+    end
   end
 end
