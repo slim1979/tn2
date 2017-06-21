@@ -1,19 +1,21 @@
 class Station
   def initialize(station)
     @station = station
-    @trains = {}
+    @trains = []
   end
 
   def train_arrival(train)
-    @trains[train.name] = train.type
+    @trains << train
+    "Train #{train.id} has been arrived"
   end
 
   def train_departure(train)
     @trains.delete(train)
+    "Train #{train.id} has been departed"
   end
 
-  def sort_trains_by_type
-    @trains.sort_by { |_train, type| type }
+  def type(type)
+    @trains.count { |train| train.type == type }
   end
 end
 
@@ -43,16 +45,15 @@ end
 
 class Train
   attr_accessor :route
-  attr_reader :vans, :type
+  attr_reader :vans, :type, :id
 
-  def initialize(train, type, vans)
-    @train = train
+  def initialize(id, type, vans)
+    @id = id
     @type = type
     @vans = vans
-    @route = []
     @speed = 0
     @move = 0
-    @global_move = 0
+    @was_moved = false
   end
 
   def increase_speed(speed)
@@ -72,19 +73,31 @@ class Train
   end
 
   def increase_vans(vans)
-    @vans += vans if @speed.zero?
+    if @speed.zero?
+      @vans += vans
+    else
+      'Stop the train first'
+    end
   end
 
   def decrease_vans(vans)
-    @vans -= vans if @vans - vans >= 0 && @speed.zero?
+    if @vans - vans >= 0 && @speed.zero?
+      @vans -= vans
+    else
+      'Stop the train first or check vans amount'
+    end
   end
 
   def move_forward
     if @route.empty?
       puts 'Route not found'
+    elsif @move + 1 >= @route.length
+      stop
+      @move = @route.length - 1
+      "reached the terminus - #{@route[@move]}"
     else
+      @was_moved = true
       @move += 1
-      @route.reverse! && @move = 1 if @move == @route.length
       @route[@move]
     end
   end
@@ -92,25 +105,42 @@ class Train
   def move_backward
     if @route.empty?
       puts 'Route not found'
+    elsif @move - 1 < 0
+      stop
+      @move = 0
+      "reached the terminus - #{@route[@move]}"
     else
       @move -= 1
-      @route.reverse! && @move = @route.length - 2 if @move < 0
       @route[@move]
     end
   end
 
-  def name
-    @train
-  end
-
-  def location
-    if @global_move < 1
-      puts "Now in #{@route[@move]}"
-      puts "Going to #{@route[@move + 1]}"
+  def previous_station
+    if @was_moved
+      @route[@move - 1]
     else
-      puts "Was in #{@route[@move - 1]}"
-      puts "Now in #{@route[@move]}"
-      puts "Going to #{@route[@move + 1]}"
+      'New train. Have no previous station'
     end
   end
+
+  def now_station
+    @route[@move]
+  end
+
+  def next_station
+    @route[@move + 1]
+  end
 end
+
+@train = Train.new(12, 'pass', 30)
+@train2 = Train.new(124, 'pass', 25)
+@train3 = Train.new(4, 'cargo', 5)
+@route = Route.new('aaa', 'bbb')
+@route.add('ccc2')
+@route.add('ccc3')
+@route.add('ccc4')
+@train.route = @route.list
+@station = Station.new('first')
+@station.train_arrival(@train)
+@station.train_arrival(@train2)
+@station.train_arrival(@train3)
