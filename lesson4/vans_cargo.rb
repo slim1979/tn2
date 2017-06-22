@@ -1,0 +1,2 @@
+class VansCargo < Vans
+end

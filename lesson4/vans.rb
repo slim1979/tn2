@@ -1,0 +1,2 @@
+class Vans
+end
