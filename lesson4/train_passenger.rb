@@ -1,4 +1,6 @@
-class PassengerTrain < Train
+class PassengerTrain
+  include Train
+
   def initialize(id)
     super
     @type = 'passenger'

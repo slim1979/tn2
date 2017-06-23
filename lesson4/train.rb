@@ -1,7 +1,7 @@
-class Train
+module Train
 
   attr_accessor :route
-  attr_reader :vans, :type, :id
+  attr_reader :vans, :type, :id, :speed
 
   def initialize(id)
     @id = id
@@ -11,11 +11,11 @@ class Train
     @was_moved = false
   end
 
-  def increase_speed(speed)
+  def speed_up(speed)
     @speed += speed
   end
 
-  def decrease_speed(speed)
+  def speed_down(speed)
     if @speed - speed > 0
       @speed -= speed
     else
@@ -27,15 +27,15 @@ class Train
     @speed = 0
   end
 
-  def increase_vans(number, type)
-    if @speed.zero? && !@vans.include?(number) && type == self.type
-      @vans << number
+  def add_vans(van)
+    if @speed.zero? && !@vans.include?(van) && van.type == self.type
+      @vans << van
     else
       'Check van number, type or stop the train first'
     end
   end
 
-  def decrease_vans(number)
+  def delete_vans(number)
     if @speed.zero? && @vans.include?(number)
       @vans.delete(number)
     else
@@ -44,45 +44,51 @@ class Train
   end
 
   def move_forward
-    if @route.nil? || @route.empty?
-      puts 'Route not found'
+    if !@route
+      have_no_route_yet
     elsif @move + 1 >= @route.length
       stop
       @move = @route.length - 1
-      "reached the terminus - #{@route[@move]}"
+      "reached the terminus - station #{@route[@move]}"
     else
       @was_moved = true
       @move += 1
-      @route[@move]
+      "Station #{@route[@move]}"
     end
   end
 
   def move_backward
-    if @route.nil? || @route.empty?
-      puts 'Route not found'
+    if !@route
+      have_no_route_yet
     elsif @move - 1 < 0
       stop
       @move = 0
-      "reached the terminus - #{@route[@move]}"
+      "reached the terminus - station #{@route[@move]}"
     else
       @move -= 1
-      @route[@move]
+      "Station #{@route[@move]}"
     end
   end
 
   def previous_station
-    if @was_moved
-      @route[@move - 1]
+    if @route
+      @was_moved ? "Station #{@route[@move - 1]}" : 'New train. Have no previous station'
     else
-      'New train. Have no previous station'
+      have_no_route_yet
     end
   end
 
   def now_station
-    @route[@move]
+    @route ? "Station #{@route[@move]}" : have_no_route_yet
   end
 
   def next_station
-    @route[@move + 1]
+    @route ? "Station #{@route[@move + 1]}" : have_no_route_yet
+  end
+
+  private
+
+  def have_no_route_yet
+    'Have no route yet'
   end
 end
