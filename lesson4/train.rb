@@ -97,6 +97,6 @@ module Train
   private
 
   def have_no_route_yet
-    'Have no route yet'
+    "Train #{self.id} have no route yet"
   end
 end

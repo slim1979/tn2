@@ -181,14 +181,18 @@ loop do
     create_train(type)
     puts_result
   when 3
-    print "Available stations: "
-    @stations.each { |station| print station.name.to_s + ", " }
-    puts
-    print 'Enter start point: '
-    start = gets.strip.chomp.downcase.capitalize!
-    print 'Enter final point: '
-    finish = gets.strip.chomp.downcase.capitalize!
-    create_route(start, finish)
+    print 'Available stations: '
+    if @stations.empty?
+      print 'Stations list is empty. Create some stations first.'
+    else
+      @stations.each { |station| print station.name.to_s + ' ' }
+      puts
+      print 'Enter start point: '
+      start = gets.strip.chomp.downcase.capitalize!
+      print 'Enter final point: '
+      finish = gets.strip.chomp.downcase.capitalize!
+      create_route(start, finish)
+    end
     puts_result
   when 7
     print 'What train? (id):'
