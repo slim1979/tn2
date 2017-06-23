@@ -1,2 +1,3 @@
-class VansCargo < Vans
+class VansCargo
+  include Vans
 end
