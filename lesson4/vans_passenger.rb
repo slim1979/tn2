@@ -1,13 +1,9 @@
 class PassengerVan
   include Vans
 
-  attr_reader :type, :number
+  def initialize(number, type, kind)
+    super
+    @type = 'passenger'
+  end
 
-  # def re_kind(kind)
-  #   self.kind = kind && "Changed to #{kind}" if %w[СВ КВ ПВ].include? kind
-  # end
-
-  private
-
-  attr_writer :type
 end

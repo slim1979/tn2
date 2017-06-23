@@ -35,11 +35,12 @@ require_relative 'route.rb'
 # @station.train_arrival(@train)
 # @station.train_arrival(@train2)
 # @station.train_arrival(@train3)
-@trains[0].add_vans(PassengerVan.new(5,'passenger','ПВ'))
-@trains[0].add_vans(PassengerVan.new(15,'passenger','ПВ'))
-@trains[0].add_vans(PassengerVan.new(2,'passenger','ПВ'))
+@trains[0].add_vans(PassengerVan.new(5, 'passenger', 'ПВ'))
+@trains[0].add_vans(PassengerVan.new(15, 'passenger', 'ПВ'))
+@trains[0].add_vans(PassengerVan.new(2, 'passenger', 'ПВ'))
 @trains[0].vans.sort_by!(&:number)
-@p_vans, @c_vans = []
+@p_vans = []
+@c_vans = []
 
 def move(id)
   @trains.each do |train|
@@ -90,6 +91,7 @@ def vans(id)
 end
 
 def create_van
+  @wrong_number = nil
   puts 'To create van enter its number, type and kind: '
   loop do
     print 'Number: '
@@ -106,14 +108,32 @@ def create_van
     @kind = gets.strip.chomp
     break unless @kind.nil? || @kind.empty?
   end
+  wrong_number
+  entering_van
+end
 
+def wrong_number
   if @type == 'passenger'
+    @p_vans.each do |van|
+      @wrong_number = true if van.number == @number
+    end
+  else
+    @c_vans.each do |van|
+      @wrong_number = true if van.number == @number
+    end
+  end
+end
+
+def entering_van
+  if @wrong_number
+    puts 'Van with such number already exists. Try again'
+  elsif @type == 'passenger'
     @p_vans << PassengerVan.new(@number, @type, @kind)
     'Van created'
   elsif @type == 'cargo'
     @c_vans << CargoVan.new(@number, @type, @kind)
     'Van created'
   else
-    'Sorry no such van type. Try again'
+    'Sorry, no such van type. Try again'
   end
 end

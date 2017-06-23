@@ -1,3 +1,3 @@
-class VansCargo
+class CargoVan
   include Vans
 end
