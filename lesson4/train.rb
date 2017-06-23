@@ -28,10 +28,18 @@ module Train
   end
 
   def add_vans(van)
-    if @speed.zero? && !@vans.include?(van) && van.type == self.type
+    if @speed.zero? && !@vans.include?(van) && van.type == self.type && van.status == 'free'
       @vans << van
-    else
-      'Check van number, type or stop the train first'
+      van.status = 'busy'
+      "Van #{van.number} successfully added. Vans count - #{@vans.count}"
+    elsif !@speed.zero?
+      'Stop the train first. Aborted.'
+    elsif @vans.include?(van)
+      'This van already connected to this train. Aborted.'
+    elsif van.type != self.type
+      "This train is only supported #{self.type} vans. Aborted."
+    elsif van.status != 'free'
+      'Van is already added to another train. Aborted.'
     end
   end
 

@@ -6,134 +6,204 @@ require_relative 'vans_passenger.rb'
 require_relative 'vans_cargo.rb'
 require_relative 'station.rb'
 require_relative 'route.rb'
-
-# puts 'Создавать станции'
-# puts 'Создавать поезда'
-# puts 'Создавать маршруты и управлять станциями в нем (добавлять, удалять)'
-# puts 'Назначать маршрут поезду'
-# puts 'Добавлять вагоны к поезду'
-# puts 'Отцеплять вагоны от поезда'
-# puts 'Перемещать поезд по маршруту вперед и назад'
-# puts 'Просматривать список станций и список поездов на станции'
+@stations = []
+@routes = []
 @trains = []
-@trains << PassengerTrain.new(1233) << PassengerTrain.new(1234)
-@trains << PassengerTrain.new(1235) << PassengerTrain.new(1236)
-@trains << CargoTrain.new(1233 / 3) << CargoTrain.new(1234 / 5)
-@trains[1].route = 'aaa','bbb','ccc'
-# @train.increase_vans(1,'cargo')
-@van = PassengerVan.new(1,'passenger','СВ')
-@van2 = PassengerVan.new(123,'aaa','dsds')
-# @train = Train.new(12, 'pass', 30)
-# @train2 = Train.new(124, 'pass', 25)
-# @train3 = Train.new(4, 'cargo', 5)
-# @route = Route.new('aaa', 'bbb')
-# @route.add('ccc2')
-# @route.add('ccc3')
-# @route.add('ccc4')
-# @train.route = @route.list
-# @station = Station.new('first')
-# @station.train_arrival(@train)
-# @station.train_arrival(@train2)
-# @station.train_arrival(@train3)
-@trains[0].add_vans(PassengerVan.new(5, 'passenger', 'ПВ'))
-@trains[0].add_vans(PassengerVan.new(15, 'passenger', 'ПВ'))
-@trains[0].add_vans(PassengerVan.new(2, 'passenger', 'ПВ'))
-@trains[0].vans.sort_by!(&:number)
-@p_vans = []
-@c_vans = []
+@all_vans = []
 
-def move(id)
-  @trains.each do |train|
-    if train.id.eql? id
-      @answer = train.move_forward
-      break
+# id создаваемого поезда
+@id = 0
+# номер вагона
+@number = 0
+
+loop do
+
+  puts '1. Создавать станции'
+  puts '2. Создавать поезда'
+  puts '3. Создавать маршруты и управлять станциями в нем (добавлять, удалять)'
+  puts '4. Назначать маршрут поезду'
+  puts '5. Добавлять вагоны к поезду'
+  puts '6. Отцеплять вагоны от поезда'
+  puts '7. Перемещать поезд по маршруту вперед и назад'
+  puts '8. Просматривать список станций и список поездов на станции'
+  puts '9. Выйти из программы'
+
+  def create_station(name)
+    @stations << Station.new(name)
+    @result = "Station successfully created!"
+  end
+
+  def create_route(start, finish)
+    @a = []
+    @stations.each { |station| @a << station.name }
+    if @a.include?(start) && @a.include?(finish)
+      @routes << Route.new(start, finish)
+      @result = 'Route successfully created!'
+    elsif !@a.include? start
+      @result = 'Start station is not exists'
+    elsif !@a.include?(finish)
+      @result = 'Finish station is not exists'
+    end
+  end
+
+  def create_train(type)
+    @id += 1
+    if type == 'p'
+      @trains << PassengerTrain.new(@id)
+      @result = 'Passenger train created!'
+    elsif type == 'c'
+      @trains << CargoTrain.new(@id)
+      @result = 'Cargo train created!'
     else
-      @answer = "No such train - #{id}"
+      @id -= 1
+      @result = 'Didnt understand you. Try again. Aborted'
     end
   end
-  @answer
-end
 
-def now(id)
-  @trains.each do |train|
-    if train.id.eql? id
-      @answer = train.now_station
-      break
+  def move_forward(id)
+    @trains.each do |train|
+      if train.id.eql? id
+        @result = train.move_forward
+        break
+      else
+        @result = "No such train - #{id}"
+      end
+    end
+    # @result
+  end
+
+  def move_backward(id)
+    @trains.each do |train|
+      if train.id.eql? id
+        @result = train.move_forward
+        break
+      else
+        @result = "No such train - #{id}"
+      end
+    end
+    # @result
+  end
+
+  def now(id)
+    @trains.each do |train|
+      if train.id.eql? id
+        @result = train.now_station
+        break
+      else
+        @result = "No such train - #{id}"
+      end
+    end
+    # @result
+  end
+
+  def route(id)
+    @trains.each do |train|
+      if train.id.eql? id
+        @result = train.route
+        break
+      else
+        @result = "No such train - #{id}"
+      end
+    end
+    # @result
+  end
+
+  def vans(id)
+    @trains.each do |train|
+      if train.id.eql? id
+        @result = train.vans
+        break
+      else
+        @result = "No such train - #{id}"
+      end
+    end
+    # @result
+  end
+
+  def create_van
+    puts 'To create van enter its type and kind: '
+    @number += 1
+    loop do
+      print 'Type (p/c): '
+      @type = gets.strip.chomp.downcase
+      break unless @type.nil? || @type.empty?
+    end
+    loop do
+      print 'Kind: '
+      @kind = gets.strip.chomp
+      break unless @kind.nil? || @kind.empty?
+    end
+    entering_to_all_vans
+  end
+
+  def entering_to_all_vans
+    if @type == 'p'
+      @type = 'passenger'
+      @all_vans << PassengerVan.new(@number, @type, @kind)
+      "Passenger van ##{@number} created"
+    elsif @type == 'c'
+      @type = 'cargo'
+      @all_vans << CargoVan.new(@number, @type, @kind)
+      "Cargo van ##{@number} created"
     else
-      @answer = "No such train - #{id}"
+      'Sorry, no such van type. Try again'
     end
   end
-  @answer
-end
 
-def route(id)
-  @trains.each do |train|
-    if train.id.eql? id
-      @answer = train.route
-      break
-    else
-      @answer = "No such train - #{id}"
+  def add_van(train_id, van_number)
+    @all_vans.each { |van| @van = van if van.number == van_number }
+    @trains.each do |train|
+      if train.id == train_id
+        @result = train.add_vans(@van)
+        break
+      else
+        @result = "No such train - #{train_id}"
+      end
     end
+    @result
   end
-  @answer
-end
 
-def vans(id)
-  @trains.each do |train|
-    if train.id.eql? id
-      @answer = train.vans
-      break
-    else
-      @answer = "No such train - #{id}"
+  def puts_result
+    puts @result.to_s
+    puts
+  end
+
+  @action = gets.to_i
+  case @action
+  when 1
+    print 'Enter new station name: '
+    name = gets.strip.chomp.capitalize!
+    create_station(name)
+    puts_result
+  when 2
+    print 'Passenger or Cargo train? (p/c): '
+    type = gets.strip.chomp.downcase
+    create_train(type)
+    puts_result
+  when 3
+    print "Available stations: "
+    @stations.each { |station| print station.name.to_s + ", " }
+    puts
+    print 'Enter start point: '
+    start = gets.strip.chomp.downcase.capitalize!
+    print 'Enter final point: '
+    finish = gets.strip.chomp.downcase.capitalize!
+    create_route(start, finish)
+    puts_result
+  when 7
+    print 'What train? (id):'
+    id = gets.to_i
+    print 'Forward or backward? (f/b):'
+    move = gets.strip.chomp.downcase
+    if move == 'f'
+      move_forward(id)
+    elsif move == 'b'
+      move_backward(id)
     end
-  end
-  @answer
-end
-
-def create_van
-  @wrong_number = nil
-  puts 'To create van enter its number, type and kind: '
-  loop do
-    print 'Number: '
-    @number = gets.strip.chomp
-    break unless @number.nil? || @number.empty?
-  end
-  loop do
-    print 'Type: '
-    @type = gets.strip.chomp.downcase
-    break unless @type.nil? || @type.empty?
-  end
-  loop do
-    print 'Kind: '
-    @kind = gets.strip.chomp
-    break unless @kind.nil? || @kind.empty?
-  end
-  wrong_number
-  entering_van
-end
-
-def wrong_number
-  if @type == 'passenger'
-    @p_vans.each do |van|
-      @wrong_number = true if van.number == @number
-    end
+    puts_result
+  when 9
+    puts 'Bye bye'
+    break
   else
-    @c_vans.each do |van|
-      @wrong_number = true if van.number == @number
-    end
-  end
-end
-
-def entering_van
-  if @wrong_number
-    puts 'Van with such number already exists. Try again'
-  elsif @type == 'passenger'
-    @p_vans << PassengerVan.new(@number, @type, @kind)
-    'Van created'
-  elsif @type == 'cargo'
-    @c_vans << CargoVan.new(@number, @type, @kind)
-    'Van created'
-  else
-    'Sorry, no such van type. Try again'
   end
 end
