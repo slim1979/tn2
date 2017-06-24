@@ -9,7 +9,4 @@ module Vans
     @kind = kind
     @status = 'free'
   end
-
-  private
-
 end

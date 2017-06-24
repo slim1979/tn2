@@ -1,23 +1,26 @@
 class Route
-  def initialize(start_point, end_point)
-    @route = [start_point, end_point]
+  attr_reader :id, :waypoints
+
+  def initialize(id, start_point, end_point)
+    @id = id
+    @waypoints = [start_point, end_point]
   end
 
   def add(station)
-    @route.insert(-2, station)
+    @waypoints.insert(-2, station)
   end
 
   def delete(station)
-    if @route.include? station
-      @route.delete(station)
+    if @waypoints.include? station
+      @waypoints.delete(station)
     else
       "Station #{station} is not exist in this route"
     end
   end
 
   def list
-    @route.each_with_index do |station, i|
-      puts "#{i + 1}.#{station}"
+    @waypoints.each_with_index do |station, i|
+      print "#{i + 1}.#{station} "
     end
   end
 end

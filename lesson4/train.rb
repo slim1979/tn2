@@ -53,7 +53,7 @@ module Train
 
   def move_forward
     if !@route
-      have_no_route_yet
+      no_route_yet
     elsif @move + 1 >= @route.length
       stop
       @move = @route.length - 1
@@ -67,14 +67,14 @@ module Train
 
   def move_backward
     if !@route
-      have_no_route_yet
+      no_route_yet
     elsif @move - 1 < 0
       stop
       @move = 0
-      "reached the terminus - station #{@route[@move]}"
+      @result = "reached the terminus - station #{@route[@move]}"
     else
       @move -= 1
-      "Station #{@route[@move]}"
+      @result = "Station #{@route[@move]}"
     end
   end
 
@@ -82,21 +82,21 @@ module Train
     if @route
       @was_moved ? "Station #{@route[@move - 1]}" : 'New train. Have no previous station'
     else
-      have_no_route_yet
+      no_route_yet
     end
   end
 
   def now_station
-    @route ? "Station #{@route[@move]}" : have_no_route_yet
+    @route ? "Station #{@route[@move]}" : no_route_yet
   end
 
   def next_station
-    @route ? "Station #{@route[@move + 1]}" : have_no_route_yet
+    @route ? "Station #{@route[@move + 1]}" : no_route_yet
   end
 
   private
 
-  def have_no_route_yet
+  def no_route_yet
     "Train #{self.id} have no route yet"
   end
 end
