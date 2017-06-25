@@ -57,11 +57,11 @@ module Train
     elsif @move + 1 >= @route.length
       stop
       @move = @route.length - 1
-      "reached the terminus - station #{@route[@move]}"
+      "Can\'t do it. Train is reached the terminus - station \'#{@route[@move]}\'"
     else
       @was_moved = true
       @move += 1
-      "Station #{@route[@move]}"
+      "Chu chu!!! Train arrived on station \'#{@route[@move]}\'"
     end
   end
 
@@ -71,27 +71,27 @@ module Train
     elsif @move - 1 < 0
       stop
       @move = 0
-      @result = "reached the terminus - station #{@route[@move]}"
+      "Can\'t do it. Train is reached the terminus - station \'#{@route[@move]}\'"
     else
       @move -= 1
-      @result = "Station #{@route[@move]}"
+      "Chu chu!!! Train arrived on station \'#{@route[@move]}\'"
     end
   end
 
   def previous_station
     if @route
-      @was_moved ? "Station #{@route[@move - 1]}" : 'New train. Have no previous station'
+      @was_moved ? "Previous station is \'#{@route[@move - 1]}\'" : 'New train. Have no previous station'
     else
       no_route_yet
     end
   end
 
   def now_station
-    @route ? "Station #{@route[@move]}" : no_route_yet
+    @route ? "Train now on \'#{@route[@move]}\' station" : no_route_yet
   end
 
   def next_station
-    @route ? "Station #{@route[@move + 1]}" : no_route_yet
+    @route ? "Station \'#{@route[@move + 1]}\'" : no_route_yet
   end
 
   private
