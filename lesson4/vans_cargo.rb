@@ -3,7 +3,7 @@ class CargoVan
 
   def initialize(number, kind)
     super
-    @type = 'cargo'
+    @type = 'грузовой'
   end
 
 end

@@ -14,7 +14,7 @@ class Route
     if @waypoints.include? station
       @waypoints.delete(station)
     else
-      "Station #{station} is not exist in this route"
+      "Станции \'#{station}\' не существует на этом маршруте."
     end
   end
 
