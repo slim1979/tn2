@@ -79,9 +79,19 @@ loop do
     end
   end
 
+  def route_and_waypoints
+    @routes.each do |route|
+      print "Route #{route.id}-> "
+      route.waypoints.each do |point|
+        print "#{point} "
+      end
+    end
+    puts
+  end
+
   def pre_edit_route
     puts 'Available routes: '
-    @routes.each { |route| puts "Route #{route.id}->#{route.waypoints} " }
+    route_and_waypoints
     print 'Enter route id to edit: '
     id = gets.to_i
     if @routes_ids.include?(id)
@@ -92,7 +102,7 @@ loop do
   end
 
   def edit_route(id)
-    print 'You want to add stations or to delete? (a/d): '
+    print 'You want to (a)dd stations or to (d)elete? (a/d): '
     answer = gets.strip.chomp.downcase
     if answer == 'a'
       add_stations_to_route(id)
@@ -106,17 +116,35 @@ loop do
   def add_stations_to_route(id)
     @routes.each { |route| @current_route = route.waypoints if route.id == id }
     available_stations = @exists_stations_titles - @current_route
-    print "Available stations:"
+    print 'Available stations: '
     available_stations.each{ |station| print "#{station} " }
     puts
     print 'Enter station name to add it to route: '
-    name = gets.strip.chomp.downcase
-    if @exists_stations_titles.include?(name)
-      @routes.each { |route| route.add(name) if route.id == id }
+    station = gets.strip.chomp.downcase
+    if @exists_stations_titles.include?(station)
+      @routes.each { |route| route.add(station) if route.id == id }
+      @result = "Success. Station \'#{station}\' added to route."
     else
-      puts "No such station - #{name}. Try again? (y/n): "
+      puts "No such station - #{station}. Try again? (y/n): "
       answer = gets.strip.chomp.downcase
-      answer == 'y' ? add_stations_to_route(id) : @result = "No such station - #{name}"
+      answer == 'y' ? add_stations_to_route(id) : @result = "No such station - #{station}"
+    end
+  end
+
+  def delete_stations_from_route(id)
+    @routes.each { |route| @current_route = route.waypoints if route.id == id }
+    print 'Route has next stations: '
+    @current_route.each { |waypoint| print "#{waypoint} " }
+    puts
+    print 'Choose which one to delete? '
+    station = gets.strip.chomp
+    if @current_route.include?(station)
+      @routes.each { |route| route.delete(station) if route.id == id }
+      @result = "Success. Station \'#{station}\' deleted from route."
+    else
+      puts "No such station - #{station}. Try again? (y/n): "
+      answer = gets.strip.chomp.downcase
+      answer == 'y' ? add_stations_to_route(id) : @result = "No such station - #{station}"
     end
   end
 
@@ -205,7 +233,7 @@ loop do
   def create_van
     puts 'To create van enter its type and kind: '
     loop do
-      print 'Type (p/c): '
+      print 'Type (p)assenger or (c)argo (p/c): '
       @type = gets.strip.chomp.downcase
       break unless @type.nil? || @type.empty?
     end
@@ -220,14 +248,14 @@ loop do
   def entering_to_all_vans
     if @type == 'p'
       @vans_ids << @van_id += 1
-      @vans << PassengerVan.new(@van_id, 'passenger', @kind)
-      "Passenger van ##{@van_id} created"
+      @vans << PassengerVan.new(@van_id, @kind)
+      @result = "Passenger van ##{@van_id} created"
     elsif @type == 'c'
       @vans_ids << @van_id += 1
-      @vans << CargoVan.new(@van_id, 'cargo', @kind)
-      "Cargo van ##{@van_id} created"
+      @vans << CargoVan.new(@van_id, @kind)
+      @result = "Cargo van ##{@van_id} created"
     else
-      'Sorry, no such van type. Try again'
+      @result = 'Sorry, no such van type. Try again'
     end
   end
 
@@ -258,12 +286,12 @@ loop do
     create_station(name)
     puts_result
   when 2
-    print 'Passenger or Cargo train? (p/c): '
+    print '(P)assenger or (C)argo train? (p/c): '
     type = gets.strip.chomp.downcase
     create_train(type)
     puts_result
   when 3
-    print 'Create or edit route? (c/e): '
+    print '(C)reate or (e)dit route? (c/e): '
     answer = gets.strip.chomp.downcase
     if answer == 'c'
       pre_create_route_actions
@@ -273,10 +301,13 @@ loop do
       @result = 'Didnt understand you. Try again. Aborted'
     end
     puts_result
+  when 4
+    create_van
+    puts_result
   when 5
     @choosed_route = nil
     if @routes.empty?
-      print 'Routes list is empty. Create some routes first.'
+      @result = 'Routes list is empty. Create some routes first.'
     else
       pre_path_assignment
       path_assignment
@@ -297,12 +328,12 @@ loop do
   when 8
     print 'Available stations: '
     if @exists_stations_titles.empty?
-      print 'Stations list is empty. Create some stations first.'
+      @result = 'Stations list is empty. Create some stations first.'
     else
       @exists_stations_titles.sort.each { |station| print station + ' ' }
+      @result = nil
     end
-    puts
-    puts
+    puts_result
   when 9
   when 0
     puts 'Bye bye'
