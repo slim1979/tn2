@@ -3,6 +3,6 @@ class CargoTrain
 
   def initialize(id)
     super
-    @type = 'cargo'
+    @type = 'грузовой'
   end
 end

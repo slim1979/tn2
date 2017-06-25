@@ -3,7 +3,7 @@ class PassengerVan
 
   def initialize(number, kind)
     super
-    @type = 'passenger'
+    @type = 'пассажирский'
   end
 
 end

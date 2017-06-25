@@ -25,33 +25,43 @@ require_relative 'route.rb'
 # результаты действий
 @result = nil
 
-loop do
-
-  puts '1. Создать станцию'
-  puts '2. Создать поезд'
-  puts '3. Создать / редактировать маршрут'
-  puts '4. Создать вагон'
-  puts '5. Назначить маршрут поезду'
-  puts '6. Добавить / отцепить вагоны к поезду'
-  puts '7. Переместить поезд по маршруту'
-  puts '8. Просмотреть список станций'
-  puts '9. Просмотреть список поездов на станции'
-  puts '0. Выйти из программы'
+while @exit != true
+  puts
+  puts '**************** Станция ****************'
+  puts '   1. Создать новую станцию'
+  puts '   2. Посмотреть список созданных станций'
+  puts '   3. Посмотреть список поездов на станции'
+  puts '**************** Маршрут ****************'
+  puts '   4. Создать маршрут'
+  puts '   5. Редактировать маршрут'
+  puts '**************** Вагон ****************'
+  puts '   6. Создать вагон'
+  puts '**************** Поезд ****************'
+  puts '   7. Создать новый поезд'
+  puts '   8. Добавить вагоны'
+  puts '   9. Отцепить вагоны'
+  puts '  10. Назначить маршрут поезду'
+  puts '  11. Увеличить скорость поезда'
+  puts '  12. Уменьшить скорость поезда'
+  puts '  13. Уменьшить скорость поезда'
+  puts '  14. Переместить поезд по маршруту'
+  puts '======================================='
+  puts '  0. Выйти из программы'
 
   def create_station(name)
     if @exists_stations_titles.include? name
-      @result = 'Station already exist. Aborted.'
+      @result = 'Станция уже существует. Отмена'
     else
       @exists_stations_titles << name
       @stations << Station.new(name)
-      @result = "Station #{name.capitalize} successfully created!"
+      @result = "Станция #{name.capitalize} успешно создана!"
     end
   end
 
   def available_stations
-    print 'Available stations: '
+    print 'Доступные станции: '
     if @exists_stations_titles.empty?
-      print 'Stations list is empty. Create some stations first.'
+      print 'Список станций пуст. Для начала создайте станцию.'
     else
       @exists_stations_titles.each { |station| print station + ' ' }
     end
@@ -60,9 +70,9 @@ loop do
 
   def pre_create_route_actions
     available_stations
-    print 'Enter start point: '
+    print 'Введите начальную точку маршрута: '
     start = gets.strip.chomp
-    print 'Enter final point: '
+    print 'Введите конечную точку маршрута: '
     finish = gets.strip.chomp
     create_route(start, finish)
   end
@@ -71,17 +81,17 @@ loop do
     if @exists_stations_titles.include?(start) && @exists_stations_titles.include?(finish)
       @routes_ids << @route_id += 1
       @routes << Route.new(@route_id, start, finish)
-      @result = 'Route successfully created!'
+      @result = 'Маршрут успешно создан!'
     elsif !@exists_stations_titles.include? start
-      @result = 'Start station is not exists'
+      @result = 'Начальная точка маршрута не существует!'
     elsif !@exists_stations_titles.include?(finish)
-      @result = 'Finish station is not exists'
+      @result = 'Конечная точка маршрута не существует!'
     end
   end
 
   def route_and_waypoints
     @routes.each do |route|
-      print "Route #{route.id}-> "
+      print "Маршрут #{route.id}-> "
       route.waypoints.each do |point|
         print "#{point} "
       end
@@ -90,79 +100,77 @@ loop do
   end
 
   def pre_edit_route
-    puts 'Available routes: '
+    puts 'Доступные маршруты: '
     route_and_waypoints
-    print 'Enter route id to edit: '
+    print 'Введите номер маршрута: '
     id = gets.to_i
     if @routes_ids.include?(id)
       edit_route(id)
     else
-      @result = 'Didnt understand you. Try again. Aborted'
+      didnt_understand_you
     end
   end
 
   def edit_route(id)
-    print 'You want to (a)dd stations or to (d)elete? (a/d): '
+    print 'Вы хотите (д)обавить станцию или (у)далить?: '
     answer = gets.strip.chomp.downcase
-    if answer == 'a'
+    if %w[д Д l L].include? answer
       add_stations_to_route(id)
-    elsif answer == 'd'
+    elsif %w[у У e E].include? answer
       delete_stations_from_route(id)
     else
-      @result = 'Didnt understand you. Try again. Aborted'
+      didnt_understand_you
     end
+  end
+
+  def no_such_station_try_again
+    puts "Нет такой станции - #{station}. Попробуете еще раз? (д/н): "
+    answer = gets.strip.chomp.downcase
+    %w[д l].include?(answer) ? add_stations_to_route(id) : @result = "Нет такой станции - #{station}"
   end
 
   def add_stations_to_route(id)
     @routes.each { |route| @current_route = route.waypoints if route.id == id }
     available_stations = @exists_stations_titles - @current_route
-    print 'Available stations: '
+    print 'Доступные станции: '
     available_stations.each{ |station| print "#{station} " }
     puts
-    print 'Enter station name to add it to route: '
+    print 'Введите название станции, которую хотите добавить в маршрут: '
     station = gets.strip.chomp.downcase
     if @exists_stations_titles.include?(station)
       @routes.each { |route| route.add(station) if route.id == id }
-      @result = "Success. Station \'#{station}\' added to route."
+      @result = "Станция \'#{station}\' успешно добавлена в маршрут."
     else
-      puts "No such station - #{station}. Try again? (y/n): "
-      answer = gets.strip.chomp.downcase
-      answer == 'y' ? add_stations_to_route(id) : @result = "No such station - #{station}"
+      no_such_station_try_again
     end
   end
 
   def delete_stations_from_route(id)
     @routes.each { |route| @current_route = route.waypoints if route.id == id }
-    print 'Route has next stations: '
+    print 'В маршруте есть следующие станции: '
     @current_route.each { |waypoint| print "#{waypoint} " }
     puts
-    print 'Choose which one to delete? '
+    print 'Выберите станцию для удаления: '
     station = gets.strip.chomp
     if @current_route.include?(station)
       @routes.each { |route| route.delete(station) if route.id == id }
-      @result = "Success. Station \'#{station}\' deleted from route."
+      @result = "Станция \'#{station}\' успешно удалена из маршрута."
     else
-      puts "No such station - #{station}. Try again? (y/n): "
-      answer = gets.strip.chomp.downcase
-      answer == 'y' ? add_stations_to_route(id) : @result = "No such station - #{station}"
+      no_such_station_try_again
     end
   end
 
   def pre_path_assignment
-    puts 'Available trains: '
+    puts 'Доступные поезда: '
     @trains.each do |train|
-      if train.route
-        puts "Train #{train.id}->#{train.route} "
-      else
-        puts "Train #{train.id}-> no route "
-      end
+      train.route ? (puts "Поезд #{train.id}->#{train.route} ") : (puts "Поезд #{train.id}-> маршрут не назначен ")
     end
-    puts 'Available routes: '
-    @routes.each { |route| puts "Route #{route.id}->#{route.waypoints} " }
-    puts 'Choose train and route for it:'
-    print 'Train id: '
+    puts 'Доступные маршруты: '
+    @routes.each { |route| puts "Маршрут #{route.id}->#{route.waypoints} " }
+    puts 'Введите номер поезда и номер маршрута для него: '
+    print 'Номер поезда: '
     @trainid = gets.to_i
-    print 'Route id: '
+    print 'Номер маршрута: '
     @routeid = gets.to_i
   end
 
@@ -170,23 +178,23 @@ loop do
     if @trains_ids.include?(@trainid) && @routes_ids.include?(@routeid)
       @routes.each { |route| @choosed_route = route if route.id == @routeid }
       @trains.each { |train| train.route = @choosed_route.waypoints if train.id == @trainid }
-      @result = "Success. Route #{@routeid} added to train #{@trainid}"
+      @result = "Маршрут ##{@routeid} успешно добавлен к поезду ##{@trainid}"
     else
-      @result = 'Wrong train or route id'
+      @result = 'Вы неверно ввели номер поезда или номер маршрута.'
     end
   end
 
   def create_train(type)
-    if type == 'p'
+    if %w[п П g G].include? type
       @trains_ids << @train_id += 1
       @trains << PassengerTrain.new(@train_id)
-      @result = 'Passenger train created!'
-    elsif type == 'c'
+      @result = "Пассажирский поезд под номером ##{@train_id} создан!"
+    elsif %w[г Г u U].include? type
       @trains_ids << @train_id += 1
       @trains << CargoTrain.new(@train_id)
-      @result = 'Cargo train created!'
+      @result = "Грузовой поезд под номером ##{@train_id} создан!"
     else
-      @result = 'Didnt understand you. Try again. Aborted'
+      didnt_understand_you
     end
   end
 
@@ -194,7 +202,7 @@ loop do
     if @trains_ids.include? id
       @trains.each { |train| @result = train.move_forward if train.id == id }
     else
-      no_such_train
+      no_such_train(id)
     end
   end
 
@@ -202,43 +210,19 @@ loop do
     if @trains_ids.include? id
       @trains.each { |train| @result = train.move_backward if train.id == id }
     else
-      no_such_train
-    end
-  end
-
-  def now(id)
-    if @trains_ids.include? id
-      @trains.each { |train| @result = train.now_station if train.id == id }
-    else
-      no_such_train
-    end
-  end
-
-  def route(id)
-    if @trains_ids.include? id
-      @trains.each { |train| @result = train.route if train.id == id }
-    else
-      no_such_train
-    end
-  end
-
-  def vans(id)
-    if @trains_ids.include? id
-      @trains.each { |train| @result = train.vans if train.id == id }
-    else
-      no_such_train
+      no_such_train(id)
     end
   end
 
   def create_van
-    puts 'To create van enter its type and kind: '
+    puts 'Какой вагон Вы хотите создать?'
     loop do
-      print 'Type (p)assenger or (c)argo (p/c): '
+      print '(п)ассажирский или (г)рузовой: '
       @type = gets.strip.chomp.downcase
       break unless @type.nil? || @type.empty?
     end
     loop do
-      print 'Kind: '
+      print 'Вид: '
       @kind = gets.strip.chomp
       break unless @kind.nil? || @kind.empty?
     end
@@ -246,31 +230,71 @@ loop do
   end
 
   def entering_to_all_vans
-    if @type == 'p'
+    if %w[п g].include? @type
       @vans_ids << @van_id += 1
       @vans << PassengerVan.new(@van_id, @kind)
-      @result = "Passenger van ##{@van_id} created"
-    elsif @type == 'c'
+      @result = "Пассажиркий вагон ##{@van_id} создан."
+    elsif %w[г u].include? @type
       @vans_ids << @van_id += 1
       @vans << CargoVan.new(@van_id, @kind)
-      @result = "Cargo van ##{@van_id} created"
+      @result = "Грузовой вагон ##{@van_id} создан"
     else
-      @result = 'Sorry, no such van type. Try again'
+      @result = 'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
     end
   end
 
-  def add_van(train_id, van_number)
+  def pre_add_vans
+    puts 'Прицепляем новые вагоны...'
+    available_trains
+    puts 'Доступные вагоны:'
+    @vans.each { |van| puts "##{van.number}. Тип: #{van.type}, вид: #{van.kind}. " if van.status == 'free' }
+    print 'Введите номер поезда: '
+    @tid = gets.to_i
+    print 'Введите номер вагона: '
+    @vid = gets.to_i
+    add_vans(@tid, @vid)
+  end
+
+  def add_vans(train_id, van_number)
     @vans.each { |van| @van = van if van.number == van_number }
     if @trains_ids.include? train_id
       @trains.each { |train| @result = train.add_van(@van) if train.id == train_id }
     else
-      no_such_train
+      no_such_train(train_id)
     end
     @result
   end
 
-  def no_such_train
-    @result = "No such train - #{id}"
+  def delete_vans
+    available_trains
+    print 'Введите номер поезда, у которого Вы хотите отцепить вагон: '
+    @tid = gets.to_i
+    if @trains_ids.include?(@tid)
+      @trains.each do |train|
+        if train.id == @tid && train.vans.count.zero?
+          @result =  'Вагонов нет. Удалять нечего.'
+        elsif train.id == @tid && !train.vans.count.zero?
+        puts "Поезд ##{train.id}. Тип: #{train.type}, скорость: #{train.speed}, имеет следующие вагоны:"
+        train.vans.each { |van| puts "< Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
+        print 'Введите номер вагона для отцепления: '
+        number = gets.to_i
+        train.vans.each { |van| @result = train.delete_van(van) if van.number == number }
+        end
+      end
+    end
+  end
+
+  def available_trains
+    puts 'Доступные поезда:'
+    @trains.each { |train| puts "Поезд ##{train.id}. Тип: #{train.type}, вагонов: #{train.vans.count}, скорость: #{train.speed}."}
+  end
+
+  def didnt_understand_you
+    @result = 'Ввод не распознан. Попробуйте еще раз. Отмена.'
+  end
+
+  def no_such_train(id)
+    @result = "Не такого поезда - #{id}"
   end
 
   def puts_result
@@ -281,24 +305,33 @@ loop do
   @action = gets.to_i
   case @action
   when 1
-    print 'Enter new station name: '
+    print 'Введите название новой станции: '
     name = gets.strip.chomp
     create_station(name)
     puts_result
   when 2
-    print '(P)assenger or (C)argo train? (p/c): '
+    available_stations
+    puts_result
+  when 3
+    available_stations
+    print 'Выберите станцию, для которой хотите просмотреть список поездов: '
+    station = gets.strip.chomp
+    if @exists_stations_titles.include?(station)
+    end
+  when 2-1
+    print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
     type = gets.strip.chomp.downcase
     create_train(type)
     puts_result
-  when 3
-    print '(C)reate or (e)dit route? (c/e): '
+  when 3-1
+    print 'Вы хотите (с)оздать новый или (и)зменить существующий маршрут?: '
     answer = gets.strip.chomp.downcase
-    if answer == 'c'
+    if %w[с С c C].include? answer
       pre_create_route_actions
-    elsif answer == 'e'
+    elsif %w[и И b B].include? answer
       pre_edit_route
     else
-      @result = 'Didnt understand you. Try again. Aborted'
+      didnt_understand_you
     end
     puts_result
   when 4
@@ -307,37 +340,36 @@ loop do
   when 5
     @choosed_route = nil
     if @routes.empty?
-      @result = 'Routes list is empty. Create some routes first.'
+      @result = 'Список маршрутов пуст. Создайте маршрут.'
     else
       pre_path_assignment
       path_assignment
     end
     puts_result
   when 6
-  when 7
-    print 'What train? (id):'
-    id = gets.to_i
-    print 'Forward or backward? (f/b):'
-    move = gets.strip.chomp.downcase
-    if move == 'f'
-      move_forward(id)
-    elsif move == 'b'
-      move_backward(id)
+    print 'Вы хотите (п)рицепить или (о)тцепить вагоны?: '
+    choise = gets.strip.chomp
+    if %w[п П g G].include? choise
+      pre_add_vans
+    elsif %w[о О j J].include? choise
+      delete_vans
     end
     puts_result
-  when 8
-    print 'Available stations: '
-    if @exists_stations_titles.empty?
-      @result = 'Stations list is empty. Create some stations first.'
-    else
-      @exists_stations_titles.sort.each { |station| print station + ' ' }
-      @result = nil
+  when 7
+    print 'Введите номер поезда: '
+    id = gets.to_i
+    print 'Куда двигать поезд - (в)перед или (н)азад: '
+    move = gets.strip.chomp.downcase
+    if %w[в В d D].include? move
+      move_forward(id)
+    elsif %w[и И b B].include? move
+      move_backward(id)
     end
     puts_result
   when 9
   when 0
-    puts 'Bye bye'
-    break
-  else
+    # @exit = true
+    puts 'Всего хорошего! Приходите еще!'
+    # break
   end
 end

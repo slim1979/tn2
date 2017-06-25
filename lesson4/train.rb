@@ -1,7 +1,7 @@
 module Train
 
   attr_accessor :route
-  attr_reader :vans, :type, :id, :speed
+  attr_reader :type, :id, :speed, :vans
 
   def initialize(id)
     @id = id
@@ -19,7 +19,7 @@ module Train
     if @speed - speed > 0
       @speed -= speed
     else
-      'Speed cant be negative'
+      'Это даст отрицательный результат, а скорость не может быть отрицательной.'
     end
   end
 
@@ -27,27 +27,31 @@ module Train
     @speed = 0
   end
 
-  def add_vans(van)
+  def add_van(van)
     if @speed.zero? && !@vans.include?(van) && van.type == self.type && van.status == 'free'
       @vans << van
       van.status = 'busy'
-      "Van #{van.number} successfully added. Vans count - #{@vans.count}"
+      "Вагон #{van.number} успешно прицеплен. Количество вагонов - #{@vans.count}"
     elsif !@speed.zero?
-      'Stop the train first. Aborted.'
+      'Сначала остановите поезд. Отмена.'
     elsif @vans.include?(van)
-      'This van already connected to this train. Aborted.'
+      'Этот вагон уже прицеплен к этому поезду. Отмена.'
     elsif van.type != self.type
-      "This train is only supported #{self.type} vans. Aborted."
+      "К этому поезду можно прицепить вагоны только типа \'#{self.type}\'. Отмена."
     elsif van.status != 'free'
-      'Van is already added to another train. Aborted.'
+      'Этот вагон уже прицеплен к другому поезду. Отмена.'
     end
   end
 
-  def delete_vans(number)
-    if @speed.zero? && @vans.include?(number)
-      @vans.delete(number)
+  def delete_van(van)
+    if @speed.zero? && @vans.include?(van)
+      @vans.delete(van)
+      van.status = 'free'
+      "Вагон ##{van.number} успешно отцеплен от поезда."
+    elsif !@speed.zero?
+      'Сначала остановите поезд.'
     else
-      'Stop the train first or check vans amount'
+      'Такого вагона нет в составе поезда. Отмена.'
     end
   end
 
@@ -57,11 +61,13 @@ module Train
     elsif @move + 1 >= @route.length
       stop
       @move = @route.length - 1
-      "Can\'t do it. Train is reached the terminus - station \'#{@route[@move]}\'"
+      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{@route[@move]}\'"
+    elsif @speed == 0
+      'Для движения увеличьте у поезда скорость'
     else
       @was_moved = true
       @move += 1
-      "Chu chu!!! Train arrived on station \'#{@route[@move]}\'"
+      "Чу чу!!! Поезд приехал на станцию \'#{@route[@move]}\'"
     end
   end
 
@@ -71,32 +77,34 @@ module Train
     elsif @move - 1 < 0
       stop
       @move = 0
-      "Can\'t do it. Train is reached the terminus - station \'#{@route[@move]}\'"
+      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{@route[@move]}\'"
+    elsif @speed == 0
+      'Для движения увеличьте у поезда скорость'
     else
       @move -= 1
-      "Chu chu!!! Train arrived on station \'#{@route[@move]}\'"
+      "Чу чу!!! Поезд приехал на станцию \'#{@route[@move]}\'"
     end
   end
 
   def previous_station
     if @route
-      @was_moved ? "Previous station is \'#{@route[@move - 1]}\'" : 'New train. Have no previous station'
+      @was_moved ? "Предыдущая станция \'#{@route[@move - 1]}\'" : 'Это новый поезд. Предыдущей станции нет.'
     else
       no_route_yet
     end
   end
 
   def now_station
-    @route ? "Train now on \'#{@route[@move]}\' station" : no_route_yet
+    @route ? "Поезд сейчас на станции \'#{@route[@move]}\'" : no_route_yet
   end
 
   def next_station
-    @route ? "Station \'#{@route[@move + 1]}\'" : no_route_yet
+    @route ? "Следующая станция \'#{@route[@move + 1]}\'" : no_route_yet
   end
 
   private
 
   def no_route_yet
-    "Train #{self.id} have no route yet"
+    "У поезда #{self.id} нет назначенного маршрута"
   end
 end

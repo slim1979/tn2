@@ -3,6 +3,6 @@ class PassengerTrain
 
   def initialize(id)
     super
-    @type = 'passenger'
+    @type = 'пассажирский'
   end
 end

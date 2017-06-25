@@ -10,12 +10,12 @@ class Station
 
   def train_arrival(train)
     @trains << train
-    "Train #{train.id} has been arrived"
+    "Поезд #{train.id} прибыл на станцию!"
   end
 
   def train_departure(train)
     @trains.delete(train)
-    "Train #{train.id} has been departed"
+    "Поезд #{train.id} покинул станцию!"
   end
 
   def type(type)
