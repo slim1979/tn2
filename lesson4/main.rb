@@ -215,39 +215,32 @@ while @exit != true
   end
 
   def move_forward(id)
-    if @trains_ids.include? id
-      index = @trains_ids.sort.index id
-      train = @trains[index]
-      @now_station = train.now_station
-      @result = @next_station = train.move_forward
-      puts_result
-
-      index = @stations_titles.sort.index @now_station
-      station = @stations[index]
-      @result = station.train_departure(train)
-      puts_result
-      index = @stations_titles.sort.index @next_station
-      station = @stations[index]
-      @result = station.train_arrival(train)
-    else
-      no_such_train(id)
-    end
+    index = @trains_ids.sort.index id
+    train = @trains[index]
+    departure = train.now_station
+    @result = arrival = train.move_forward
+    puts_result
+    departure_arrival(train, departure, arrival)
   end
 
   def move_backward(id)
-    index = @trains_ids.sort.index id if @trains_ids.include? id
-    train = @trains.sort_by(&:id)
-    @now_station = train[index].now_station
-    @result = @next_station = train[index].move_backward
+    index = @trains_ids.sort.index id
+    train = @trains[index]
+    departure = train.now_station
+    @result = arrival = train.move_backward
     puts_result
-    train = train[index]
+    departure_arrival(train, departure, arrival)
+  end
 
-    index = @stations_titles.sort.index @now_station if @stations_titles.include? @now_station
-    station = @stations.sort_by(&:name)
-    @result = station[index].train_departure(train)
+  def departure_arrival(train, departure, arrival)
+    index = @stations_titles.sort.index departure
+    station = @stations[index]
+    @result = station.train_departure(train)
     puts_result
-    index = @stations_titles.sort.index @next_station if @stations_titles.include? @next_station
-    @result = station[index].train_arrival(train)
+
+    index = @stations_titles.sort.index arrival
+    station = @stations[index]
+    @result = station.train_arrival(train)
   end
 
   def create_van
