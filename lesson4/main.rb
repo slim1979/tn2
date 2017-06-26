@@ -183,21 +183,23 @@ while @exit != true
     train_id = gets.to_i
     print 'Номер маршрута: '
     route_id = gets.to_i
-    path_assignment(train_id, route_id)
-  end
-
-  def path_assignment(train_id, route_id)
     if @trains_ids.include?(train_id) && @routes_ids.include?(route_id)
-      @trains.each do |train|
-        next unless train.id == train_id
-        @routes.each { |route| @choosed_route = route if route.id == route_id }
-        train.route = @choosed_route.waypoints
-        @stations.each { |station| @message = station.train_arrival(train) if station.name == train.route.first }
-      end
-      @result = "Маршрут ##{route_id} успешно добавлен к поезду ##{train_id}. " + @message
+      path_assignment(train_id, route_id)
     else
       @result = 'Вы неверно ввели номер поезда или номер маршрута.'
     end
+  end
+
+  def path_assignment(train_id, route_id)
+    index = @trains_ids.sort.index train_id
+    train = @trains[index]
+    index = @routes_ids.sort.index route_id
+    route = @routes[index]
+    train.route = route.waypoints
+    index = @stations_titles.sort.index train.route.first
+    station = @stations[index]
+    message = station.train_arrival(train)
+    @result = "Маршрут ##{route_id} успешно добавлен к поезду ##{train_id}. " + message
   end
 
   def create_train(type)
