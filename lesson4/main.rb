@@ -130,7 +130,7 @@ while @exit != true
 
   def no_such_station_try_again(id, station)
     puts "Станция #{station} недоступна для добавления. Попробуете еще раз? (д/н): "
-    answer = gets.strip.chomp.downcase
+    answer = gets.strip.chomp
     %w[д l].include?(answer) ? add_stations_to_route(id) : @result = 'Ввод отменен пользователем'
   end
 
@@ -156,14 +156,15 @@ while @exit != true
   end
 
   def delete_stations_from_route(id)
-    @routes.each { |route| @current_route = route.waypoints if route.id == id }
+    index = @routes_ids.sort.index id
+    route = @routes[index]
     print 'В маршруте есть следующие станции: '
-    @current_route.each { |waypoint| print "#{waypoint} " }
+    route.each { |waypoint| print "#{waypoint} " }
     puts
     print 'Выберите станцию для удаления: '
     station = gets.strip.chomp
-    if @current_route.include?(station)
-      @routes.each { |route| route.delete(station) if route.id == id }
+    if route.include?(station)
+      route.delete(station)
       @result = "Станция \'#{station}\' успешно удалена из маршрута."
     else
       no_such_station_try_again
@@ -334,8 +335,6 @@ while @exit != true
   def train_stop(id)
     @trains.each { |train| @result = train.stop if train.id == id }
   end
-
-
 
   def available_trains
     puts 'Доступные поезда:'
