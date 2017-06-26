@@ -14,7 +14,6 @@ class Game
   attr_reader :train, :station, :route, :van
   attr_reader :result
 
-
   def initialize
     @stations = []
     @stations_titles = []
@@ -57,6 +56,109 @@ class Game
     puts '======================================='
     puts '  0. Выйти из программы'
     choise
+  end
+
+  # я решил спрятать в private все методы этого класса, так как
+  # полный доступ к ним уже есть через меню
+  private
+
+  def choise
+    print 'Выберите действие: '
+    @action = gets.to_i
+    case @action
+    when 1
+      print 'Введите название новой станции: '
+      name = gets.strip.chomp
+      create_station(name)
+      puts_result
+    when 2
+      available_stations
+    when 3
+      available_stations
+      print 'Выберите станцию, для которой хотите просмотреть список поездов: '
+      name = gets.strip.chomp
+      if @stations_titles.include?(name)
+        puts "Поезда на станции #{name}:"
+        @stations.each do |station|
+          next unless station.name == name
+          station.trains.each { |train| puts "Поезд ##{train.id}, тип: #{train.type}, вагоны: #{train.vans.count} " }
+        end
+      end
+    when 4
+      if @stations_titles.empty?
+        @result = 'Список станций пуст. Создайте пару станций.'
+      else
+        available_stations
+        pre_create_route_actions
+      end
+      puts_result
+    when 5
+      pre_edit_route
+      puts_result
+    when 6
+      create_van
+      puts_result
+    when 7
+      print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
+      type = gets.strip.chomp.downcase
+      create_train(type)
+      puts_result
+    when 8
+      pre_add_van
+      puts_result
+    when 9
+      pre_delete_van
+      puts_result
+    when 10
+      @choosed_route = nil
+      if @routes.empty?
+        @result = 'Список маршрутов пуст. Создайте маршрут.'
+      else
+        pre_path_assignment
+      end
+      puts_result
+    when 11
+      train_choise
+      choise = 'up'
+      @trains_ids.include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      puts_result
+    when 12
+      train_choise
+      choise = 'down'
+      @trains_ids.include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      puts_result
+    when 13
+      train_choise
+      @trains_ids.include?(@id) ? train_stop(@id) : no_such_train(@id)
+      puts_result
+    when 14
+      available_trains
+      print 'Введите номер поезда: '
+      id = gets.to_i
+      @trains_ids.include?(id) ? where_to_move_train(id) : no_such_train(id)
+      puts_result
+    when 15
+      @trains.each { |train| puts "#{train.id}, #{train.route}, #{train.move}" }
+    when 0
+      # @exit = true
+      puts 'Всего хорошего! Приходите еще!'
+      # break
+    end
+  end
+
+  def fill
+    create_station('aaa')
+    puts_result
+    create_station('bbb')
+    puts_result
+    create_station('ccc')
+    puts_result
+    create_route('aaa', 'bbb')
+    puts_result
+    create_train('g')
+    puts_result
+    pre_path_assignment
+    puts_result
   end
 
   def create_station(name)
@@ -263,10 +365,10 @@ class Game
 
   def create_van
     puts 'Какой вагон Вы хотите создать?'
-      print '(п)ассажирский или (г)рузовой: '
-      type = gets.strip.chomp
-      print 'Вид (Спальный (СВ), Купейный (КВ), угольный, зерновой и т.д.): '
-      kind = gets.strip.chomp
+    print '(п)ассажирский или (г)рузовой: '
+    type = gets.strip.chomp
+    print 'Вид (Спальный (СВ), Купейный (КВ), угольный, зерновой и т.д.): '
+    kind = gets.strip.chomp
     entering_to_all_vans(type, kind)
   end
 
@@ -293,8 +395,11 @@ class Game
     id = gets.to_i
     print 'Введите номер вагона: '
     number = gets.to_i
-    add_van(id, number) if @trains_ids.include?(id) && @vans_numbers.include?(number)
-    didnt_understand_you
+    if @trains_ids.include?(id) && @vans_numbers.include?(number)
+      add_van(id, number)
+    else
+      didnt_understand_you
+    end
   end
 
   def add_van(id, number)
@@ -305,41 +410,48 @@ class Game
     @result = train.add_van(van)
   end
 
-  def delete_vans
+  def pre_delete_van
     available_trains
     print 'Введите номер поезда, у которого Вы хотите отцепить вагон: '
-    @tid = gets.to_i
-    if @trains_ids.include?(@tid)
-      @trains.each do |train|
-        if train.id == @tid && train.vans.count.zero?
-          @result =  'Вагонов нет. Удалять нечего.'
-        elsif train.id == @tid && !train.vans.count.zero?
-        puts "Поезд ##{train.id}. Тип: #{train.type}, скорость: #{train.speed}, имеет следующие вагоны:"
-        train.vans.each { |van| puts "< Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
-        print 'Введите номер вагона для отцепления: '
-        number = gets.to_i
-        train.vans.each { |van| @result = train.delete_van(van) if van.number == number }
-        end
-      end
+    id = gets.to_i
+    if @trains_ids.include?(id)
+      index = @trains_ids.index id
+      train = @trains[index]
+      delete_van(train)
+    else
+      no_such_train
     end
   end
 
-  def increase_speed(id)
-    @trains.each do |train|
-      next unless train.id == id
-      print 'Введите скорость: '
-      speed = gets.to_i
-      @result = train.speed_up(speed)
+  def delete_van(train)
+    if train.vans.count.zero?
+      @result = 'Вагонов нет. Удалять нечего.'
+    else
+      puts "Поезд ##{train.id}. Тип: #{train.type}, скорость: #{train.speed}, имеет следующие вагоны:"
+      train.vans.each { |van| puts "< Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
+      van_choise
     end
   end
 
-  def decrease_speed(id)
-    @trains.each do |train|
-      next unless train.id == id
-      print 'Введите скорость: '
-      speed = gets.to_i
-      @result = train.speed_down(speed)
+  def van_choise
+    print 'Выберите номер вагона для отцепления: '
+    number = gets.to_i
+    if @vans_numbers.include?(number)
+      index = @vans_numbers.index number
+      van = @vans[index]
+      @result = train.delete_van(van)
+    else
+      didnt_understand_you
     end
+  end
+
+  def change_speed(id, choise)
+    index = @trains_ids.index id
+    train = @trains[index]
+    print 'Введите скорость: '
+    speed = gets.to_i
+    @result = train.speed_up(speed) if choise == 'up'
+    @result = train.speed_down(speed) if choise == 'down'
   end
 
   def train_stop(id)
@@ -370,106 +482,7 @@ class Game
       print " "*@result.length,"\r"; sleep 0.3
       print @result.to_s,"\r"; sleep 0.3
     end
-    # puts @result.to_s
     puts
-  end
-
-  def fill
-    create_station('aaa')
-    puts_result
-    create_station('bbb')
-    puts_result
-    create_station('ccc')
-    puts_result
-    create_route('aaa', 'bbb')
-    puts_result
-    create_train('g')
-    puts_result
-    pre_path_assignment
-    puts_result
-    increase_speed(1)
-    puts_result
-  end
-
-  def choise
-    @action = gets.to_i
-    case @action
-    when 1
-      print 'Введите название новой станции: '
-      name = gets.strip.chomp
-      create_station(name)
-      puts_result
-    when 2
-      available_stations
-    when 3
-      available_stations
-      print 'Выберите станцию, для которой хотите просмотреть список поездов: '
-      name = gets.strip.chomp
-      if @stations_titles.include?(name)
-        puts "Поезда на станции #{name}:"
-        @stations.each do |station|
-          next unless station.name == name
-          station.trains.each { |train| puts "Поезд ##{train.id}, тип: #{train.type}, вагоны: #{train.vans.count} " }
-        end
-      end
-    when 4
-      if @stations_titles.empty?
-        @result = 'Список станций пуст. Создайте пару станций.'
-      else
-        available_stations
-        pre_create_route_actions
-      end
-      puts_result
-    when 5
-      pre_edit_route
-      puts_result
-    when 6
-      create_van
-      puts_result
-    when 7
-      print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
-      type = gets.strip.chomp.downcase
-      create_train(type)
-      puts_result
-    when 8
-      pre_add_van
-      puts_result
-    when 9
-      delete_vans
-      puts_result
-    when 10
-      @choosed_route = nil
-      if @routes.empty?
-        @result = 'Список маршрутов пуст. Создайте маршрут.'
-      else
-        pre_path_assignment
-      end
-      puts_result
-    when 11
-      train_choise
-      @trains_ids.include?(@id) ? increase_speed(@id) : no_such_train(@id)
-      puts_result
-    when 12
-      train_choise
-      @trains_ids.include?(@id) ? decrease_speed(@id) : no_such_train(@id)
-      puts_result
-    when 13
-      train_choise
-      @trains_ids.include?(@id) ? train_stop(@id) : no_such_train(@id)
-      puts_result
-    when 14
-      available_trains
-      print 'Введите номер поезда: '
-      id = gets.to_i
-      @trains_ids.include?(id) ? where_to_move_train(id) : no_such_train(id)
-      puts_result
-    when 15
-      @trains.each { |train| puts "#{train.id}, #{train.route}, #{train.move}" }
-    when 0
-      # @exit = true
-      puts 'Всего хорошего! Приходите еще!'
-      # break
-    end
   end
 end
 
