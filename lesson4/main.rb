@@ -58,6 +58,7 @@ while @exit != true
     else
       @stations_titles << name
       @stations << Station.new(name)
+      @stations.sort_by!(&:name)
       @result = "Станция #{name} успешно создана!"
     end
   end
@@ -84,6 +85,7 @@ while @exit != true
     if @stations_titles.include?(start) && @stations_titles.include?(finish)
       @routes_ids << @route_id += 1
       @routes << Route.new(@route_id, start, finish)
+      @routes.sort_by!(&:id)
       @result = 'Маршрут успешно создан!'
     elsif !@stations_titles.include?(start)
       @result = 'Начальная точка маршрута не существует!'
@@ -127,26 +129,29 @@ while @exit != true
   end
 
   def no_such_station_try_again(id, station)
-    puts "Нет такой станции - #{station}. Попробуете еще раз? (д/н): "
+    puts "Станция #{station} недоступна для добавления. Попробуете еще раз? (д/н): "
     answer = gets.strip.chomp.downcase
     %w[д l].include?(answer) ? add_stations_to_route(id) : @result = 'Ввод отменен пользователем'
   end
 
   def add_stations_to_route(id)
     index = @routes_ids.sort.index id
-    route = @routes.sort_by(&:id)
-    available_stations = @stations_titles - route[index].waypoints
-    route = route[index]
-    print 'Доступные станции: '
-    available_stations.each { |station| print "\'#{station}\' " }
-    puts
-    print 'Введите название станции, которую хотите добавить в маршрут: '
-    station = gets.strip.chomp
-    if available_stations.include? station
-      route.add(station)
-      @result = "Станция \'#{station}\' успешно добавлена в маршрут."
+    route = @routes[index]
+    available_stations = @stations_titles - route.waypoints
+    if available_stations.empty?
+      @result = 'Доступных для добавления в этот маршрут станций нет. Выберите другой маршрут или создайте станции.'
     else
-      no_such_station_try_again(id, station)
+      print 'Доступные станции: '
+      available_stations.each { |station| print "\'#{station}\' " }
+      puts
+      print 'Введите название станции, которую хотите добавить в маршрут: '
+      station = gets.strip.chomp
+      if available_stations.include? station
+        route.add(station)
+        @result = "Станция \'#{station}\' успешно добавлена в маршрут."
+      else
+        no_such_station_try_again(id, station)
+      end
     end
   end
 
@@ -206,23 +211,24 @@ while @exit != true
     else
       didnt_understand_you
     end
+    @trains.sort_by!(&:id)
   end
 
   def move_forward(id)
     if @trains_ids.include? id
       index = @trains_ids.sort.index id
-      train = @trains.sort_by(&:id)
-      @now_station = train[index].now_station
-      @result = @next_station = train[index].move_forward
+      train = @trains[index]
+      @now_station = train.now_station
+      @result = @next_station = train.move_forward
       puts_result
-      train = train[index]
 
-      index = @stations_titles.sort.index @now_station if @stations_titles.include? @now_station
-      station = @stations.sort_by(&:name)
-      @result = station[index].train_departure(train)
+      index = @stations_titles.sort.index @now_station
+      station = @stations[index]
+      @result = station.train_departure(train)
       puts_result
-      index = @stations_titles.sort.index @next_station if @stations_titles.include? @next_station
-      @result = station[index].train_arrival(train)
+      index = @stations_titles.sort.index @next_station
+      station = @stations[index]
+      @result = station.train_arrival(train)
     else
       no_such_train(id)
     end
@@ -358,7 +364,11 @@ while @exit != true
   end
 
   def puts_result
-    puts @result.to_s
+    3.times do
+      print " "*@result.length,"\r"; sleep 0.3
+      print @result.to_s,"\r"; sleep 0.3
+    end
+    # puts @result.to_s
     puts
   end
 
