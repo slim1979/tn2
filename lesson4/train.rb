@@ -1,7 +1,7 @@
 module Train
 
   attr_accessor :route
-  attr_reader :type, :id, :speed, :vans
+  attr_reader :type, :id, :speed, :vans, :move
 
   def initialize(id)
     @id = id
@@ -13,11 +13,13 @@ module Train
 
   def speed_up(speed)
     @speed += speed
+    "Скорость увеличена на #{speed} и равна #{@speed}."
   end
 
   def speed_down(speed)
     if @speed - speed > 0
       @speed -= speed
+      "Скорость уменьшена на #{speed} и равна #{@speed}."
     else
       'Это даст отрицательный результат, а скорость не может быть отрицательной.'
     end
@@ -25,6 +27,7 @@ module Train
 
   def stop
     @speed = 0
+    'Поезд остановлен.'
   end
 
   def add_van(van)
@@ -67,7 +70,7 @@ module Train
     else
       @was_moved = true
       @move += 1
-      "Чу чу!!! Поезд приехал на станцию \'#{@route[@move]}\'"
+      @route[@move]
     end
   end
 
@@ -82,24 +85,24 @@ module Train
       'Для движения увеличьте у поезда скорость'
     else
       @move -= 1
-      "Чу чу!!! Поезд приехал на станцию \'#{@route[@move]}\'"
+      @route[@move]
     end
   end
 
   def previous_station
     if @route
-      @was_moved ? "Предыдущая станция \'#{@route[@move - 1]}\'" : 'Это новый поезд. Предыдущей станции нет.'
+      @was_moved ? @route[@move - 1] : 'Это новый поезд. Предыдущей станции нет.'
     else
       no_route_yet
     end
   end
 
   def now_station
-    @route ? "Поезд сейчас на станции \'#{@route[@move]}\'" : no_route_yet
+    @route ? @route[@move]: no_route_yet
   end
 
   def next_station
-    @route ? "Следующая станция \'#{@route[@move + 1]}\'" : no_route_yet
+    @route ? @route[@move + 1] : no_route_yet
   end
 
   private
