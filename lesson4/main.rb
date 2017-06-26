@@ -8,7 +8,7 @@ require_relative 'station.rb'
 require_relative 'route.rb'
 
 @stations = []
-@exists_stations_titles = []
+@stations_titles = []
 
 @routes = []
 @route_id = 0
@@ -29,33 +29,34 @@ while @exit != true
   @result = nil
   @count += 1
 
-  puts '**************** Станция ****************'
-  puts '   1. Создать новую станцию'
-  puts '   2. Посмотреть список созданных станций'
-  puts '   3. Посмотреть список поездов на станции'
-  puts '**************** Маршрут ****************'
-  puts '   4. Создать маршрут'
-  puts '   5. Редактировать маршрут'
-  puts '**************** Вагон ****************'
-  puts '   6. Создать вагон'
-  puts '**************** Поезд ****************'
-  puts '   7. Создать новый поезд'
-  puts '   8. Добавить вагоны'
-  puts '   9. Отцепить вагоны'
-  puts '  10. Назначить маршрут поезду'
-  puts '  11. Увеличить скорость поезда'
-  puts '  12. Уменьшить скорость поезда'
-  puts '  13. Остановить поезд'
-  puts '  14. Переместить поезд по маршруту'
-  puts '======================================='
-  puts '  0. Выйти из программы'
-
+  def menu
+    puts '**************** Станция ****************'
+    puts '   1. Создать новую станцию'
+    puts '   2. Посмотреть список созданных станций'
+    puts '   3. Посмотреть список поездов на станции'
+    puts '**************** Маршрут ****************'
+    puts '   4. Создать маршрут'
+    puts '   5. Редактировать маршрут'
+    puts '**************** Вагон ****************'
+    puts '   6. Создать вагон'
+    puts '**************** Поезд ****************'
+    puts '   7. Создать новый поезд'
+    puts '   8. Добавить вагоны'
+    puts '   9. Отцепить вагоны'
+    puts '  10. Назначить маршрут поезду'
+    puts '  11. Увеличить скорость поезда'
+    puts '  12. Уменьшить скорость поезда'
+    puts '  13. Остановить поезд'
+    puts '  14. Переместить поезд по маршруту'
+    puts '======================================='
+    puts '  0. Выйти из программы'
+  end
 
   def create_station(name)
-    if @exists_stations_titles.include? name
+    if @stations_titles.include? name
       @result = 'Станция уже существует. Отмена'
     else
-      @exists_stations_titles << name
+      @stations_titles << name
       @stations << Station.new(name)
       @result = "Станция #{name} успешно создана!"
     end
@@ -63,10 +64,10 @@ while @exit != true
 
   def available_stations
     print 'Доступные станции: '
-    if @exists_stations_titles.empty?
+    if @stations_titles.empty?
       @result = 'Список станций пуст. Для начала создайте станцию.'
     else
-      @exists_stations_titles.each { |station| print "\'#{station}\' " }
+      @stations_titles.each { |station| print "\'#{station}\' " }
     end
     puts
   end
@@ -80,13 +81,13 @@ while @exit != true
   end
 
   def create_route(start, finish)
-    if @exists_stations_titles.include?(start) && @exists_stations_titles.include?(finish)
+    if @stations_titles.include?(start) && @stations_titles.include?(finish)
       @routes_ids << @route_id += 1
       @routes << Route.new(@route_id, start, finish)
       @result = 'Маршрут успешно создан!'
-    elsif !@exists_stations_titles.include?(start)
+    elsif !@stations_titles.include?(start)
       @result = 'Начальная точка маршрута не существует!'
-    elsif !@exists_stations_titles.include?(finish)
+    elsif !@stations_titles.include?(finish)
       @result = 'Конечная точка маршрута не существует!'
     end
   end
@@ -125,25 +126,27 @@ while @exit != true
     end
   end
 
-  def no_such_station_try_again
-    puts "Нет такой станции - #{@station}. Попробуете еще раз? (д/н): "
+  def no_such_station_try_again(id, station)
+    puts "Нет такой станции - #{station}. Попробуете еще раз? (д/н): "
     answer = gets.strip.chomp.downcase
-    %w[д l].include?(answer) ? add_stations_to_route(id) : @result = "Нет такой станции - #{@station}"
+    %w[д l].include?(answer) ? add_stations_to_route(id) : @result = 'Ввод отменен пользователем'
   end
 
   def add_stations_to_route(id)
-    @routes.each { |route| @current_route = route.waypoints if route.id == id }
-    available_stations = @exists_stations_titles - @current_route
+    index = @routes_ids.sort.index id
+    route = @routes.sort_by(&:id)
+    available_stations = @stations_titles - route[index].waypoints
+    route = route[index]
     print 'Доступные станции: '
-    available_stations.each{ |station| print "#{station} " }
+    available_stations.each { |station| print "\'#{station}\' " }
     puts
     print 'Введите название станции, которую хотите добавить в маршрут: '
-    @station = gets.strip.chomp.downcase
-    if @exists_stations_titles.include?(@station)
-      @routes.each { |route| route.add(@station) if route.id == id }
-      @result = "Станция \'#{@station}\' успешно добавлена в маршрут."
+    station = gets.strip.chomp
+    if available_stations.include? station
+      route.add(station)
+      @result = "Станция \'#{station}\' успешно добавлена в маршрут."
     else
-      no_such_station_try_again
+      no_such_station_try_again(id, station)
     end
   end
 
@@ -206,32 +209,39 @@ while @exit != true
   end
 
   def move_forward(id)
-    index = @trains_ids.sort.index id if @trains_ids.include? id
-    train = @trains.sort_by(&:id)
-    @now_station = train[index].now_station
-    @next_station = train[index].move_forward
-    @result = train[index].move_forward
-    train = train[index]
-    index = @exists_stations_titles.sort.index @now_station if @exists_stations_titles.include? @now_station
-    station = @stations.sort_by(&:name)
-    @result = station[index].train_departure(train)
-    puts_result
-    index = @exists_stations_titles.sort.index @next_station if @exists_stations_titles.include? @next_station
-    @result = station[index].train_arrival(train)
-  end
-
-  def move_backward(id)
     if @trains_ids.include? id
-      @trains.each do |train|
-        next unless train.id == id
-        position = train.now_station
-        @stations.each { |station| station.train_departure(train) if station.name == position }
-        position = train.move_backward
-        @stations.each { |station| @result = station.train_arrival(train) if station.name == position }
-      end
+      index = @trains_ids.sort.index id
+      train = @trains.sort_by(&:id)
+      @now_station = train[index].now_station
+      @result = @next_station = train[index].move_forward
+      puts_result
+      train = train[index]
+
+      index = @stations_titles.sort.index @now_station if @stations_titles.include? @now_station
+      station = @stations.sort_by(&:name)
+      @result = station[index].train_departure(train)
+      puts_result
+      index = @stations_titles.sort.index @next_station if @stations_titles.include? @next_station
+      @result = station[index].train_arrival(train)
     else
       no_such_train(id)
     end
+  end
+
+  def move_backward(id)
+    index = @trains_ids.sort.index id if @trains_ids.include? id
+    train = @trains.sort_by(&:id)
+    @now_station = train[index].now_station
+    @result = @next_station = train[index].move_backward
+    puts_result
+    train = train[index]
+
+    index = @stations_titles.sort.index @now_station if @stations_titles.include? @now_station
+    station = @stations.sort_by(&:name)
+    @result = station[index].train_departure(train)
+    puts_result
+    index = @stations_titles.sort.index @next_station if @stations_titles.include? @next_station
+    @result = station[index].train_arrival(train)
   end
 
   def create_van
@@ -371,6 +381,7 @@ while @exit != true
     end
   end
 
+  menu
   fill
 
   @action = gets.to_i
@@ -387,7 +398,7 @@ while @exit != true
     available_stations
     print 'Выберите станцию, для которой хотите просмотреть список поездов: '
     name = gets.strip.chomp
-    if @exists_stations_titles.include?(name)
+    if @stations_titles.include?(name)
       puts "Поезда на станции #{name}:"
       @stations.each do |station|
         next unless station.name == name
@@ -396,7 +407,7 @@ while @exit != true
     end
     # puts_result
   when 4
-    if @exists_stations_titles.empty?
+    if @stations_titles.empty?
       @result = 'Список станций пуст. Создайте пару станций.'
     else
       available_stations
