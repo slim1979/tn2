@@ -1,9 +1,8 @@
-class CargoVan
-  include Vans
+class CargoVan < Vans
 
   def initialize(number, kind)
     super
-    @type = 'грузовой'
+    @type = self.class
   end
 
 end

@@ -1,4 +1,4 @@
-module Vans
+class Vans
 
   attr_reader :type, :number, :kind, :status
   attr_writer :status

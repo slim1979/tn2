@@ -1,7 +1,7 @@
-module Train
+class Train
 
   attr_accessor :route
-  attr_reader :type, :id, :speed, :vans, :move
+  attr_reader :type, :id, :speed, :vans, :move, :vans_type
 
   def initialize(id)
     @id = id
@@ -31,7 +31,7 @@ module Train
   end
 
   def add_van(van)
-    if @speed.zero? && !@vans.include?(van) && van.type == self.type && van.status == 'free'
+    if @speed.zero? && !@vans.include?(van) && self.vans_type == van.class && van.status == 'free'
       @vans << van
       van.status = 'busy'
       "Вагон #{van.number} успешно прицеплен. Количество вагонов - #{@vans.count}"
@@ -39,7 +39,7 @@ module Train
       'Сначала остановите поезд. Отмена.'
     elsif @vans.include?(van)
       'Этот вагон уже прицеплен к этому поезду. Отмена.'
-    elsif van.type != self.type
+    elsif self.vans_type != van.class
       "К этому поезду можно прицепить вагоны только типа \'#{self.type}\'. Отмена."
     elsif van.status != 'free'
       'Этот вагон уже прицеплен к другому поезду. Отмена.'
