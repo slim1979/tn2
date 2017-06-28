@@ -92,7 +92,6 @@ class Game
       pre_delete_van
       puts_result
     when 10
-      @choosed_route = nil
       if @routes.empty?
         @result = 'Список маршрутов пуст. Создайте маршрут.'
       else
