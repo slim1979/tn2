@@ -486,19 +486,19 @@ class Game
     @result = "Нет такого поезда - #{id}"
   end
 
-  def puts_result
-    puts @result
-  end
-
   # def puts_result
-  #   3.times do
-  #     print ' ' * @result.length, "\r"
-  #     sleep 0.3
-  #     print @result.to_s, "\r"
-  #     sleep 0.3
-  #   end
-  #   puts
+  #   puts @result
   # end
+
+  def puts_result
+    3.times do
+      print ' ' * @result.length, "\r"
+      sleep 0.3
+      print @result.to_s, "\r"
+      sleep 0.3
+    end
+    puts
+  end
 end
 
 @game = Game.new
