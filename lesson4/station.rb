@@ -17,8 +17,4 @@ class Station
     @trains.delete(train)
     "Поезд #{train.id} покинул станцию #{self.name}!"
   end
-
-  def type(type)
-    @trains.count { |train| train.type == type }
-  end
 end
