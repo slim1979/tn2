@@ -235,7 +235,7 @@ class Game
   end
 
   def add_stations_to_route(id)
-    index = routes_map_index(id)
+    index = routes_index(id)
     route = @routes[index]
     available_stations = @stations.map(&:name) - route.waypoints
     if available_stations.empty?
@@ -256,7 +256,7 @@ class Game
   end
 
   def delete_stations_from_route(id)
-    index = routes_map_index(id)
+    index = routes_index(id)
     route = @routes[index]
     print 'В маршруте есть следующие станции: '
     route.waypoints.each { |waypoint| print "#{waypoint} " }
@@ -296,7 +296,7 @@ class Game
     index = trains_map_index(train_id)
     train = @trains[index]
 
-    index = routes_map_index(route_id)
+    index = routes_index(route_id)
     route = @routes[index]
     train.route = route.waypoints
 
@@ -474,7 +474,7 @@ class Game
     @id = gets.to_i
   end
 
-  def routes_map_index(id)
+  def routes_index(id)
     @routes.map(&:id).index id
   end
 
