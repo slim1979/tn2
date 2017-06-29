@@ -17,7 +17,7 @@ class Train
   end
 
   def speed_down(speed)
-    if @speed - speed > 0
+    if @speed - speed >= 0
       @speed -= speed
       "Скорость уменьшена на #{speed} и равна #{@speed}."
     else
