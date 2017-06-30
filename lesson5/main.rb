@@ -10,16 +10,9 @@ require_relative 'route.rb'
 class Game
   def initialize
     @stations = []
-
     @routes = []
-    @route_id = 0
-
     @trains = []
-    @train_id = 0
-
     @vans = []
-    @van_id = 0
-
     @result = nil
     fill
   end
@@ -48,7 +41,7 @@ class Game
     choise
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -186,9 +179,8 @@ class Game
   def create_route(start, finish)
     stations = @stations.map(&:name)
     if stations.include?(start) && stations.include?(finish)
-      @route_id += 1
-      @routes << Route.new(@route_id, start, finish)
-      @result = 'Маршрут успешно создан!'
+      @routes << Route.new(@routes.empty? ? 1 : @routes[-1].id + 1, start, finish)
+      @result = "Маршрут ##{@routes[-1].id} #{@routes[-1].waypoints} успешно создан!"
     elsif !stations.include?(start)
       @result = 'Начальная точка маршрута не существует!'
     elsif !stations.include?(finish)
@@ -309,13 +301,11 @@ class Game
 
   def create_train(type)
     if %w[п g].include?(type)
-      @train_id += 1
-      @trains << PassengerTrain.new(@train_id)
-      @result = "Пассажирский поезд под номером ##{@train_id} создан!"
+      @trains << PassengerTrain.new(@trains.empty? ? 1 : @trains[-1].id + 1)
+      @result = "Пассажирский поезд под номером ##{@trains[-1].id} создан!"
     elsif %w[г u].include?(type)
-      @train_id += 1
-      @trains << CargoTrain.new(@train_id)
-      @result = "Грузовой поезд под номером ##{@train_id} создан!"
+      @trains << CargoTrain.new(@trains.empty? ? 1 : @trains[-1].id + 1)
+      @result = "Грузовой поезд под номером ##{@trains[-1].id} создан!"
     else
       didnt_understand_you
     end
@@ -367,13 +357,11 @@ class Game
 
   def entering_to_all_vans(type, kind)
     if %w[п g].include?(type)
-      @van_id += 1
-      @vans << PassengerVan.new(@van_id, kind)
-      @result = "Пассажиркий вагон ##{@van_id} создан."
+      @vans << PassengerVan.new(@vans.empty? ? 1 : @vans[-1].id + 1, kind)
+      @result = "Пассажиркий вагон ##{@vans[-1].id} создан."
     elsif %w[г u].include?(type)
-      @van_id += 1
-      @vans << CargoVan.new(@van_id, kind)
-      @result = "Грузовой вагон ##{@van_id} создан"
+      @vans << CargoVan.new(@vans.empty? ? 1 : @vans[-1].id + 1, kind)
+      @result = "Грузовой вагон ##{@vans[-1].id} создан"
     else
       @result = 'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
     end
@@ -486,19 +474,19 @@ class Game
     @result = "Нет такого поезда - #{id}"
   end
 
-  # def puts_result
-  #   puts @result
-  # end
-
   def puts_result
-    3.times do
-      print ' ' * @result.length, "\r"
-      sleep 0.3
-      print @result.to_s, "\r"
-      sleep 0.3
-    end
-    puts
+    puts @result
   end
+
+  # def puts_result
+  #   3.times do
+  #     print ' ' * @result.length, "\r"
+  #     sleep 0.3
+  #     print @result.to_s, "\r"
+  #     sleep 0.3
+  #   end
+  #   puts
+  # end
 end
 
 @game = Game.new

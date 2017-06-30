@@ -1,4 +1,7 @@
+require_relative 'manufacturer.rb'
+
 class Van
+  include Manufacturer
 
   attr_reader :type, :number, :kind, :status
   attr_writer :status

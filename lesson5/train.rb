@@ -1,4 +1,7 @@
+require_relative 'manufacturer.rb'
+
 class Train
+  include Manufacturer
 
   attr_accessor :route
   attr_reader :type, :id, :speed, :vans, :move, :vans_type
