@@ -5,6 +5,7 @@ class Train
 
   attr_accessor :route
   attr_reader :type, :id, :speed, :vans, :move, :vans_type
+  @@all = []
 
   def initialize(id)
     @id = id
@@ -12,6 +13,13 @@ class Train
     @speed = 0
     @move = 0
     @was_moved = false
+    @@all << self
+  end
+
+  def self.find(train)
+    index = @@all.map(&:id).index train
+    puts index if index.nil?
+    puts @@all[index] if index
   end
 
   def speed_up(speed)
@@ -111,6 +119,6 @@ class Train
   private
 
   def no_route_yet
-    "У поезда #{self.id} нет назначенного маршрута"
+    "У поезда #{id} нет назначенного маршрута"
   end
 end
