@@ -5,7 +5,7 @@ class Train
 
   attr_accessor :route
   attr_reader :type, :id, :speed, :vans, :move, :vans_type
-  @@all = []
+  @@list = []
 
   def initialize(id)
     @id = id
@@ -13,13 +13,13 @@ class Train
     @speed = 0
     @move = 0
     @was_moved = false
-    @@all << self
+    @@list << self
   end
 
   def self.find(train)
-    index = @@all.map(&:id).index train
+    index = @@list.map(&:id).index train
     puts index if index.nil?
-    puts @@all[index] if index
+    puts @@list[index] if index
   end
 
   def speed_up(speed)

@@ -1,3 +1,4 @@
+require_relative 'instance_counter.rb'
 require_relative 'train.rb'
 require_relative 'train_passenger.rb'
 require_relative 'train_cargo.rb'
