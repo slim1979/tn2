@@ -305,10 +305,10 @@ class Game
   def create_train(id, type)
     if %w[п g].include?(type)
       @trains << PassengerTrain.new(id)
-      @result = "Пассажирский поезд под номером ##{@trains[-1].id} создан!"
+      @result = "Пассажирский поезд #{id} создан!"
     elsif %w[г u].include?(type)
       @trains << CargoTrain.new(id)
-      @result = "Грузовой поезд под номером ##{@trains[-1].id} создан!"
+      @result = "Грузовой поезд #{id} создан!"
     else
       didnt_understand_you
     end
