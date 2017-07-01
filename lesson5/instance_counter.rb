@@ -26,12 +26,3 @@ module InstanceCounter
     end
   end
 end
-
-class Car
-  include InstanceCounter
-  count_to_nil
-
-  def initialize
-    register_instances
-  end
-end
