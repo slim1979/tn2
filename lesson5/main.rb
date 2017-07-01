@@ -76,7 +76,10 @@ class Game
     when 7
       print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
       type = gets.strip.chomp.downcase
-      create_train(type)
+      puts 'Придумайте номер / идентификатор для поезда.'
+      print 'Например, Ласточка 45Ж, Тихий дон, Скорый 54/1, Экспресс и т.д.: '
+      id = gets.strip.chomp
+      create_train(id, type)
       puts_result
     when 8
       pre_add_van
@@ -299,12 +302,12 @@ class Game
     @result = "Маршрут ##{route_id} успешно добавлен к поезду ##{train_id}. " + message
   end
 
-  def create_train(type)
+  def create_train(id, type)
     if %w[п g].include?(type)
-      @trains << PassengerTrain.new(@trains.empty? ? 1 : @trains[-1].id + 1)
+      @trains << PassengerTrain.new(id)
       @result = "Пассажирский поезд под номером ##{@trains[-1].id} создан!"
     elsif %w[г u].include?(type)
-      @trains << CargoTrain.new(@trains.empty? ? 1 : @trains[-1].id + 1)
+      @trains << CargoTrain.new(id)
       @result = "Грузовой поезд под номером ##{@trains[-1].id} создан!"
     else
       didnt_understand_you
