@@ -13,7 +13,7 @@ module InstanceCounter
 
     private
 
-    def count_to_nil
+    def count_to_zero
       @instances = 0
     end
   end
