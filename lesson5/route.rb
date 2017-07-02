@@ -1,9 +1,12 @@
 class Route
+  include InstanceCounter
+  count_to_zero
   attr_reader :id, :waypoints
 
   def initialize(id, start_point, end_point)
     @id = id
     @waypoints = [start_point, end_point]
+    register_instances
   end
 
   def add(station)

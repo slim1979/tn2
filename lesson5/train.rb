@@ -1,25 +1,23 @@
-require_relative 'manufacturer.rb'
-
 class Train
   include Manufacturer
 
   attr_accessor :route
   attr_reader :type, :id, :speed, :vans, :move, :vans_type
-  @@list = []
+  @@list = {}
 
-  def initialize(id)
+  def initialize(id, manufacturer)
     @id = id
+    @manufacturer = manufacturer
     @vans = []
     @speed = 0
     @move = 0
     @was_moved = false
-    @@list << self
+    @@list[id] = self
   end
 
   def self.find(train)
-    index = @@list.map(&:id).index train
-    puts index if index.nil?
-    puts @@list[index] if index
+    nil if @@list[train].nil?
+    puts @@list[train] if @@list[train]
   end
 
   def speed_up(speed)

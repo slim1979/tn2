@@ -1,3 +1,4 @@
+require_relative 'manufacturer.rb'
 require_relative 'instance_counter.rb'
 require_relative 'train.rb'
 require_relative 'train_passenger.rb'
@@ -42,7 +43,7 @@ class Game
     choise
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -126,7 +127,7 @@ class Game
     puts_result
     create_route('aaa', 'bbb')
     puts_result
-    create_train('vvv', 'g')
+    create_train('vvv', 'g','НЭВЗ')
     puts_result
     pre_path_assignment
     puts_result
@@ -303,15 +304,21 @@ class Game
     print 'Например, Ласточка, Тихий дон, Скорый 54/1, Экспресс и т.д.: ' if %w[п g].include? type
     print 'Например, Локомотив, Маневровый, Тепловоз, Нефтяной и т.д.: ' if %w[г u].include? type
     id = gets.strip.chomp
-    create_train(id, type)
+    if trains_include?(id)
+      @result = "Поезд #{id} уже существует. Придумайте другой. Отмена."
+    else
+      print 'Укажите производителя поезда: '
+      manufacturer = gets.strip.chomp
+      create_train(id, type, manufacturer)
+    end
   end
 
-  def create_train(id, type)
+  def create_train(id, type, manufacturer)
     if %w[п g].include?(type)
-      @trains << PassengerTrain.new(id)
+      @trains << PassengerTrain.new(id, manufacturer)
       @result = "Пассажирский поезд #{id} создан!"
     elsif %w[г u].include?(type)
-      @trains << CargoTrain.new(id)
+      @trains << CargoTrain.new(id, manufacturer)
       @result = "Грузовой поезд #{id} создан!"
     else
       didnt_understand_you
@@ -359,16 +366,18 @@ class Game
     print 'Вид - Спальный (СВ), Купейный (КВ): ' if %w[п g].include?(type)
     print 'Вид - Угольный, Зерновой, Цистерна: ' if %w[г u].include?(type)
     kind = gets.strip.chomp
-    entering_to_all_vans(type, kind)
+    print 'Укажите производитя вагона: '
+    manufacturer = gets.strip.chomp
+    entering_to_all_vans(type, kind, manufacturer)
   end
 
-  def entering_to_all_vans(type, kind)
+  def entering_to_all_vans(type, kind, manufacturer)
     if %w[п g].include?(type)
-      @vans << PassengerVan.new(@vans.empty? ? 1 : @vans[-1].id + 1, kind)
-      @result = "Пассажиркий вагон ##{@vans[-1].id} создан."
+      @vans << PassengerVan.new(@vans.empty? ? 1 : @vans[-1].number + 1, kind, manufacturer)
+      @result = "Пассажиркий вагон ##{@vans[-1].number} создан."
     elsif %w[г u].include?(type)
-      @vans << CargoVan.new(@vans.empty? ? 1 : @vans[-1].id + 1, kind)
-      @result = "Грузовой вагон ##{@vans[-1].id} создан"
+      @vans << CargoVan.new(@vans.empty? ? 1 : @vans[-1].number + 1, kind, manufacturer)
+      @result = "Грузовой вагон ##{@vans[-1].number} создан"
     else
       @result = 'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
     end
