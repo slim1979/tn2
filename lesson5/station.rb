@@ -1,5 +1,3 @@
-require_relative 'instance_counter.rb'
-
 # class Station
 class Station
   include InstanceCounter
