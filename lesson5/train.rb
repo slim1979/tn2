@@ -16,8 +16,7 @@ class Train
   end
 
   def self.find(train)
-    nil if @@list[train].nil?
-    puts @@list[train] if @@list[train]
+    @@list[train]
   end
 
   def speed_up(speed)

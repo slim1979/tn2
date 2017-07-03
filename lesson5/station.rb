@@ -3,20 +3,15 @@ require_relative 'instance_counter.rb'
 # class Station
 class Station
   include InstanceCounter
-
+  count_to_zero
   attr_reader :name, :trains
   @list = []
-  count_to_zero
 
   def initialize(name)
     @name = name
     @trains = []
-    self.class.list = self
-    register_instances
-  end
-
-  def self.list=(station)
-    @list << station
+    self.class.list << self
+    self.class.counter
   end
 
   def self.list
