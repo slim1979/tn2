@@ -1,7 +1,6 @@
 # class Station
 class Station
   include InstanceCounter
-  count_to_zero
   attr_reader :name, :trains
   @list = []
 
@@ -9,7 +8,7 @@ class Station
     @name = name
     @trains = []
     self.class.list << self
-    self.class.counter
+    register_instances
   end
 
   def self.list

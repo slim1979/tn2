@@ -1,6 +1,5 @@
 class Route
   include InstanceCounter
-  count_to_zero
   attr_reader :id, :waypoints
 
   def initialize(id, start_point, end_point)
