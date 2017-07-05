@@ -1,7 +1,12 @@
 # class Station
 class Station
   include InstanceCounter
+  include ObjectValidation
+
   attr_reader :name, :trains
+
+  TITLE_FORMAT = /^[a-zа-я]{3,}$/i
+
   @list = []
 
   def initialize(name)
@@ -9,6 +14,7 @@ class Station
     @trains = []
     self.class.list << self
     register_instances
+    validate!
   end
 
   def self.list
@@ -24,4 +30,12 @@ class Station
     @trains.delete(train)
     "Поезд #{train.id} покинул станцию #{name}!"
   end
+
+  private
+
+  def validate!
+    raise ArgumentError, 'Название не может быть короче 3 символов' if name !~ TITLE_FORMAT
+    true
+  end
+
 end

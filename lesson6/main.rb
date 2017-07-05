@@ -1,4 +1,5 @@
 require_relative 'manufacturer.rb'
+require_relative 'object_validation.rb'
 require_relative 'instance_counter.rb'
 require_relative 'train.rb'
 require_relative 'train_passenger.rb'
@@ -125,9 +126,9 @@ class Game
     puts_result
     create_station('ccc')
     puts_result
-    create_route('aaa', 'bbb')
+    create_route('ccc', 'bbb')
     puts_result
-    create_train('vvv', 'g','НЭВЗ')
+    create_train('vvv-45', 'g', 'НЭВЗ')
     puts_result
     pre_path_assignment
     puts_result
@@ -178,7 +179,7 @@ class Game
     stations = @stations.map(&:name)
     if stations.include?(start) && stations.include?(finish)
       @routes << Route.new(@routes.empty? ? 1 : @routes[-1].id + 1, start, finish)
-      @result = "Маршрут ##{@routes[-1].id} #{@routes[-1].waypoints} успешно создан!"
+      # @result = "Маршрут ##{@routes[-1].id} #{@routes[-1].waypoints} успешно создан!"
     elsif !stations.include?(start)
       @result = 'Начальная точка маршрута не существует!'
     elsif !stations.include?(finish)
@@ -368,15 +369,16 @@ class Game
     kind = gets.strip.chomp
     print 'Укажите производитя вагона: '
     manufacturer = gets.strip.chomp
-    entering_to_all_vans(type, kind, manufacturer)
+    adding_to_vans(type, kind, manufacturer)
   end
 
-  def entering_to_all_vans(type, kind, manufacturer)
+  def adding_to_vans(type, kind, manufacturer)
+    number = @vans.empty? ? 1 : @vans[-1].number + 1
     if %w[п g].include?(type)
-      @vans << PassengerVan.new(@vans.empty? ? 1 : @vans[-1].number + 1, kind, manufacturer)
+      @vans << PassengerVan.new(number, kind, manufacturer)
       @result = "Пассажиркий вагон ##{@vans[-1].number} создан."
     elsif %w[г u].include?(type)
-      @vans << CargoVan.new(@vans.empty? ? 1 : @vans[-1].number + 1, kind, manufacturer)
+      @vans << CargoVan.new(number, kind, manufacturer)
       @result = "Грузовой вагон ##{@vans[-1].number} создан"
     else
       @result = 'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
