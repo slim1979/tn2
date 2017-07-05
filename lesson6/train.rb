@@ -1,8 +1,13 @@
 class Train
   include Manufacturer
+  include ObjectValidation
 
-  attr_accessor :route
-  attr_reader :type, :id, :speed, :vans, :move, :vans_type
+  attr_accessor :route, :id
+  attr_reader :type, :speed, :vans, :move, :vans_type
+
+  TRAIN_ID_FORMAT = /^.{3}-?.{2}$/i
+  TRAIN_MANUFACTURER_FORMAT = /^.{3,}$/i
+
   @@list = {}
 
   def initialize(id, manufacturer)
@@ -13,6 +18,7 @@ class Train
     @move = 0
     @was_moved = false
     @@list[id] = self
+    validate!
   end
 
   def self.find(train)
@@ -113,9 +119,15 @@ class Train
     @route ? @route[@move + 1] : no_route_yet
   end
 
-  private
+  protected
 
   def no_route_yet
     "У поезда #{id} нет назначенного маршрута"
+  end
+
+  def validate!
+    raise 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
+    raise 'Должно быть не менее 3 символов в наименовании производителя' if manufacturer.length < 3
+    true
   end
 end
