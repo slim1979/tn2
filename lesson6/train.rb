@@ -5,8 +5,8 @@ class Train
   attr_accessor :route, :id
   attr_reader :type, :speed, :vans, :move, :vans_type
 
-  TRAIN_ID_FORMAT = /^.{3}-?.{2}$/i
-  TRAIN_MANUFACTURER_FORMAT = /^.{3,}$/i
+  TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
+  TRAIN_MANUFACTURER_FORMAT = /^[a-zа-я0-9]{3,}$/i
 
   @@list = {}
 
