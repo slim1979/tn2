@@ -16,7 +16,6 @@ class Game
     @routes = []
     @trains = []
     @vans = []
-    @result = nil
     fill
   end
 
@@ -56,7 +55,6 @@ class Game
       print 'Введите название новой станции: '
       name = gets.strip.chomp
       create_station(name)
-      puts_result
     when 2
       available_stations
     when 3
@@ -64,93 +62,75 @@ class Game
       trains_list_on_station
     when 4
       if @stations.empty?
-        @result = 'Список станций пуст. Создайте пару станций.'
+        'Список станций пуст. Создайте пару станций.'
       else
         available_stations
         pre_create_route_actions
       end
-      puts_result
     when 5
       pre_edit_route
-      puts_result
     when 6
       create_van
-      puts_result
     when 7
       pre_create_train
-      puts_result
     when 8
       pre_add_van
-      puts_result
     when 9
       pre_delete_van
-      puts_result
     when 10
       if @routes.empty?
-        @result = 'Список маршрутов пуст. Создайте маршрут.'
+        'Список маршрутов пуст. Создайте маршрут.'
       else
         pre_path_assignment
       end
-      puts_result
     when 11
       train_choise
       choise = 'up'
       trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
-      puts_result
     when 12
       train_choise
       choise = 'down'
       trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
-      puts_result
     when 13
       train_choise
       trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
-      puts_result
     when 14
       available_trains
       print 'Введите номер поезда: '
       id = gets.strip.chomp
       trains_include?(id) ? where_to_move_train(id) : no_such_train(id)
-      puts_result
     when 15
       @trains.each { |train| puts "#{train.id}, #{train.route}, #{train.move}" }
     when 0
-      puts 'Всего хорошего! Приходите еще!'
+      'Всего хорошего! Приходите еще!'
     end
   end
 
   def fill
     create_station('aaa')
-    puts_result
     create_station('bbb')
-    puts_result
     create_station('ccc')
-    puts_result
     create_route('ccc', 'bbb')
-    puts_result
     create_train('vvv-45', 'g', 'НЭВЗ')
-    puts_result
     pre_path_assignment
-    puts_result
   end
 
   def create_station(name)
     if @stations.map(&:name).include?(name)
-      @result = 'Станция уже существует. Отмена'
+      'Станция уже существует. Отмена'
     else
       @stations << Station.new(name)
-      @result = "Станция #{name} успешно создана!"
+      "Станция #{name} успешно создана!"
     end
   end
 
   def available_stations
-    print 'Доступные станции: '
+    puts 'Доступные станции: '
     if @stations.empty?
-      @result = 'Список станций пуст. Для начала создайте станцию.'
+      'Список станций пуст. Для начала создайте станцию.'
     else
-      @stations.each { |station| print "\'#{station.name}\' " }
+      @stations.map(&:name)
     end
-    puts
   end
 
   def trains_list_on_station
@@ -159,11 +139,10 @@ class Game
     index = stations_index(name)
     if index.nil?
       didnt_understand_you
-      puts_result
     else
       station = @stations[index]
       puts "Поезда на станции #{station.name}:"
-      station.trains.each { |train| puts "Поезд #{train.id}, тип: #{train.type}, вагоны: #{train.vans.count} " }
+      station.trains.each { |train| "Поезд #{train.id}, тип: #{train.type}, вагоны: #{train.vans.count} " }
     end
   end
 
@@ -179,19 +158,19 @@ class Game
     stations = @stations.map(&:name)
     if stations.include?(start) && stations.include?(finish)
       @routes << Route.new(@routes.empty? ? 1 : @routes[-1].id + 1, start, finish)
-      # @result = "Маршрут ##{@routes[-1].id} #{@routes[-1].waypoints} успешно создан!"
+      @routes[-1].waypoints
     elsif !stations.include?(start)
-      @result = 'Начальная точка маршрута не существует!'
+      'Начальная точка маршрута не существует!'
     elsif !stations.include?(finish)
-      @result = 'Конечная точка маршрута не существует!'
+      'Конечная точка маршрута не существует!'
     end
   end
 
   def route_and_waypoints
-    @routes.each do |route|
-      print "Маршрут #{route.id}-> "
-      route.waypoints.each { |point| print "#{point} " }
-      puts
+    index = @routes.size
+    index.times do |route_index|
+      print "Маршрут #{route_index + 1} --> "
+      puts @routes[route_index].waypoints.to_s
     end
   end
 
@@ -210,19 +189,15 @@ class Game
   def edit_route(id)
     print 'Вы хотите (д)обавить станцию или (у)далить?: '
     answer = gets.strip.chomp.downcase
-    if %w[д l].include?(answer)
-      add_stations_to_route(id)
-    elsif %w[у e].include?(answer)
-      delete_stations_from_route(id)
-    else
-      didnt_understand_you
-    end
+    add_stations_to_route(id)      if %w[д l].include?(answer)
+    delete_stations_from_route(id) if %w[у e].include?(answer)
+    didnt_understand_you
   end
 
   def no_such_station_try_again(id, station)
     puts "Станция #{station} недоступна для добавления. Попробуете еще раз? (д/н): "
     answer = gets.strip.chomp.downcase
-    %w[д l].include?(answer) ? add_stations_to_route(id) : @result = 'Ввод отменен пользователем'
+    %w[д l].include?(answer) ? add_stations_to_route(id) : 'Ввод отменен пользователем'
   end
 
   def add_stations_to_route(id)
@@ -230,7 +205,7 @@ class Game
     route = @routes[index]
     available_stations = @stations.map(&:name) - route.waypoints
     if available_stations.empty?
-      @result = 'Доступных для добавления в этот маршрут станций нет. Выберите другой маршрут или создайте станции.'
+      'Доступных для добавления в этот маршрут станций нет. Выберите другой маршрут или создайте станции.'
     else
       print 'Доступные станции: '
       available_stations.each { |station| print "\'#{station}\' " }
@@ -239,7 +214,7 @@ class Game
       station = gets.strip.chomp
       if available_stations.include?(station)
         route.add(station)
-        @result = "Станция \'#{station}\' успешно добавлена в маршрут."
+        "Станция \'#{station}\' успешно добавлена в маршрут."
       else
         no_such_station_try_again(id, station)
       end
@@ -256,7 +231,7 @@ class Game
     station = gets.strip.chomp
     if route.waypoints.include?(station)
       route.delete(station)
-      @result = "Станция \'#{station}\' успешно удалена из маршрута."
+      "Станция \'#{station}\' успешно удалена из маршрута."
     else
       no_such_station_try_again
     end
@@ -279,7 +254,7 @@ class Game
     if trains_include?(train_id) && @routes.map(&:id).include?(route_id)
       path_assignment(train_id, route_id)
     else
-      @result = 'Вы неверно ввели номер поезда или номер маршрута.'
+      'Вы неверно ввели номер поезда или номер маршрута.'
     end
   end
 
@@ -295,18 +270,18 @@ class Game
     station = @stations[index]
     message = station.train_arrival(train)
 
-    @result = "Маршрут ##{route_id} успешно добавлен к поезду #{train_id}. " + message
+    "Маршрут ##{route_id} успешно добавлен к поезду #{train_id}. " + message
   end
 
   def pre_create_train
     print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
     type = gets.strip.chomp.downcase
     puts 'Придумайте номер / идентификатор для поезда.'
-    print 'Например, Ласточка, Тихий дон, Скорый 54/1, Экспресс и т.д.: ' if %w[п g].include? type
-    print 'Например, Локомотив, Маневровый, Тепловоз, Нефтяной и т.д.: ' if %w[г u].include? type
+    puts 'Формат - три буквы или цифры в любом порядке, дефис - по желанию,'
+    print 'и еще 2 буквы или цифры после дефиса: '
     id = gets.strip.chomp
     if trains_include?(id)
-      @result = "Поезд #{id} уже существует. Придумайте другой. Отмена."
+      "Поезд #{id} уже существует. Придумайте другой. Отмена."
     else
       print 'Укажите производителя поезда: '
       manufacturer = gets.strip.chomp
@@ -317,10 +292,10 @@ class Game
   def create_train(id, type, manufacturer)
     if %w[п g].include?(type)
       @trains << PassengerTrain.new(id, manufacturer)
-      @result = "Пассажирский поезд #{id} создан!"
+      "Пассажирский поезд #{id} создан!"
     elsif %w[г u].include?(type)
       @trains << CargoTrain.new(id, manufacturer)
-      @result = "Грузовой поезд #{id} создан!"
+      "Грузовой поезд #{id} создан!"
     else
       didnt_understand_you
     end
@@ -348,15 +323,15 @@ class Game
   def departure_arrival(train, departure, arrival)
     index = stations_index(arrival)
     if index.nil?
-      @result = arrival
+      arrival
     else
       index = stations_index(departure)
       station = @stations[index]
-      @result = station.train_departure(train)
-      puts_result
+      station.train_departure(train)
+
       index = stations_index(arrival)
       station = @stations[index]
-      @result = station.train_arrival(train)
+      station.train_arrival(train)
     end
   end
 
@@ -376,12 +351,12 @@ class Game
     number = @vans.empty? ? 1 : @vans[-1].number + 1
     if %w[п g].include?(type)
       @vans << PassengerVan.new(number, kind, manufacturer)
-      @result = "Пассажиркий вагон ##{@vans[-1].number} создан."
+      "Пассажиркий вагон ##{@vans[-1].number} создан."
     elsif %w[г u].include?(type)
       @vans << CargoVan.new(number, kind, manufacturer)
-      @result = "Грузовой вагон ##{@vans[-1].number} создан"
+      "Грузовой вагон ##{@vans[-1].number} создан"
     else
-      @result = 'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
+      'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
     end
   end
 
@@ -406,7 +381,7 @@ class Game
     van = @vans[index]
     index = trains_map_index(id)
     train = @trains[index]
-    @result = train.add_van(van)
+    train.add_van(van)
   end
 
   def pre_delete_van
@@ -424,7 +399,7 @@ class Game
 
   def delete_van(train)
     if train.vans.count.zero?
-      @result = 'Вагонов нет. Удалять нечего.'
+      'Вагонов нет. Удалять нечего.'
     else
       puts "Поезд #{train.id}. Тип: #{train.type}, скорость: #{train.speed}, имеет следующие вагоны:"
       train.vans.each { |van| puts "< Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
@@ -438,7 +413,7 @@ class Game
     if @vans.map(&:number).include?(number)
       index = @vans.map(&:number).index number
       van = @vans[index]
-      @result = train.delete_van(van)
+      train.delete_van(van)
     else
       didnt_understand_you
     end
@@ -449,8 +424,8 @@ class Game
     train = @trains[index]
     print 'Введите скорость: '
     speed = gets.to_i
-    @result = train.speed_up(speed) if choise == 'up'
-    @result = train.speed_down(speed) if choise == 'down'
+    train.speed_up(speed) if choise == 'up'
+    train.speed_down(speed) if choise == 'down'
   end
 
   def stations_index(name)
@@ -458,7 +433,7 @@ class Game
   end
 
   def train_stop(id)
-    @trains.each { |train| @result = train.stop if train.id == id }
+    @trains.each { |train| train.stop if train.id == id }
   end
 
   def trains_include?(id)
@@ -485,26 +460,12 @@ class Game
   end
 
   def didnt_understand_you
-    @result = 'Ввод не распознан. Попробуйте еще раз. Отмена.'
+    'Ввод не распознан. Попробуйте еще раз. Отмена.'
   end
 
   def no_such_train(id)
-    @result = "Нет такого поезда - #{id}"
+    "Нет такого поезда - #{id}"
   end
-
-  def puts_result
-    puts @result
-  end
-
-  # def puts_result
-  #   3.times do
-  #     print ' ' * @result.length, "\r"
-  #     sleep 0.3
-  #     print @result.to_s, "\r"
-  #     sleep 0.3
-  #   end
-  #   puts
-  # end
 end
 
 @game = Game.new

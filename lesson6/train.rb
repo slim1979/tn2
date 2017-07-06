@@ -126,8 +126,8 @@ class Train
   end
 
   def validate!
-    raise 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
-    raise 'Должно быть не менее 3 символов в наименовании производителя' if manufacturer.length < 3
+    raise ArgumentError, 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
+    raise ArgumentError, 'Должно быть не менее 3 символов в наименовании производителя' if manufacturer.length < 3
     true
   end
 end

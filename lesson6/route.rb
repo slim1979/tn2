@@ -26,9 +26,7 @@ class Route
   end
 
   def list
-    @waypoints.each_with_index do |station, i|
-      print "#{i + 1}.#{station} "
-    end
+    @waypoints.each { |station| "#{station} " }
   end
 
   private
