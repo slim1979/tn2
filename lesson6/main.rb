@@ -43,7 +43,7 @@ class Game
     choise
   end
 
-  # private
+  private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -72,7 +72,7 @@ class Game
     when 6
       create_van
     when 7
-      pre_create_train
+      create_train_exceptions_handling
     when 8
       pre_add_van
     when 9
@@ -273,9 +273,23 @@ class Game
     "Маршрут ##{route_id} успешно добавлен к поезду #{train_id}. " + message
   end
 
-  def pre_create_train
+  def create_train_exceptions_handling
+    begin
+      puts first_step_to_create_train
+    rescue ArgumentError => e
+      puts_with_effects(e.to_s)
+      puts 'Попробуем еще раз...'
+      retry
+    end
+  end
+
+  def first_step_to_create_train
     print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
     type = gets.strip.chomp.downcase
+    second_step_to_create_train(type)
+  end
+
+  def second_step_to_create_train(type)
     puts 'Придумайте номер / идентификатор для поезда.'
     puts 'Формат - три буквы или цифры в любом порядке, дефис - по желанию,'
     print 'и еще 2 буквы или цифры после дефиса: '
@@ -297,7 +311,7 @@ class Game
       @trains << CargoTrain.new(id, manufacturer)
       "Грузовой поезд #{id} создан!"
     else
-      didnt_understand_you
+    raise ArgumentError, 'Проверьте правильность ввода типа поезда'
     end
   end
 
@@ -465,6 +479,16 @@ class Game
 
   def no_such_train(id)
     "Нет такого поезда - #{id}"
+  end
+
+  def puts_with_effects(string)
+    3.times do
+      print ' ' * string.length, "\r"
+      sleep 0.3
+      print string.to_s, "\r"
+      sleep 0.3
+    end
+    puts
   end
 end
 
