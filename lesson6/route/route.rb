@@ -6,8 +6,10 @@ class Route
 
   def initialize(id, start, finish)
     @id = id
-    @waypoints = [start, finish]
+    @start = start
+    @finish = finish
     validate!
+    @waypoints = [start, finish]
     register_instances
   end
 
@@ -28,8 +30,8 @@ class Route
   private
 
   def validate!
-    raise ArgumentError unless waypoints[0].is_a? Station
-    raise ArgumentError unless waypoints[1].is_a? Station
+    raise ArgumentError, 'Начальный пункт маршрута не является станцией. Маршрут не создан.' unless start.is_a? Station
+    raise ArgumentError, 'Конечный пункт маршрута не является станцией. Маршрут не создан.' unless finish.is_a? Station
     true
   end
 end

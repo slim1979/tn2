@@ -5,9 +5,8 @@ class Van
   attr_reader :type, :number, :kind, :status
   attr_writer :status
 
-  VAN_NUMBER = /^\d+$/
-  VAN_KIND = /^.{2,}-?$/
-  VAN_MANUFACTURER = /^.{3,}$/
+  VAN_KIND = /^[a-zа-я0-9]{2,}-?\s?([a-zа-я0-9]+)?$/i
+  VAN_MANUFACTURER = /^[a-zа-я0-9]{3,}$/i
 
   def initialize(number, kind, manufacturer)
     @number = number
@@ -20,9 +19,8 @@ class Van
   protected
 
   def validate!
-    raise ArgumentError, 'У вагона должен быть номер - не менее 1 цифры' if number !~ VAN_NUMBER
-    raise ArgumentError, 'Проверьте правильность заполнения типа вагона - не менее 2 символов' if kind !~ VAN_KIND
-    raise ArgumentError, 'Проверьте правильность заполнения наименования производителя - не менее 3 символов' if manufacturer !~ VAN_MANUFACTURER
+    raise ArgumentError, 'Проверьте правильность заполнения типа вагона' if kind !~ VAN_KIND
+    raise ArgumentError, 'Проверьте правильность заполнения наименования производителя' if manufacturer !~ VAN_MANUFACTURER
     true
   end
 end

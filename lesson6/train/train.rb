@@ -6,7 +6,6 @@ class Train
   attr_reader :type, :speed, :vans, :move, :vans_type
 
   TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
-  TRAIN_MANUFACTURER_FORMAT = /^[a-zа-я0-9]{3,}$/i
 
   @@list = {}
 
@@ -127,7 +126,7 @@ class Train
 
   def validate!
     raise ArgumentError, 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
-    raise ArgumentError, 'Должно быть не менее 3 символов в наименовании производителя' if manufacturer.length < 3
+    raise ArgumentError, 'Неверный формат наименования производителя' if manufacturer !~ Manufacturer::TRAIN_MANUFACTURER_FORMAT
     true
   end
 end

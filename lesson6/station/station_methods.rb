@@ -1,18 +1,22 @@
 module StationMethods
-  def create_station(name)
+  def create_station
+    print 'Введите название новой станции: '
+    name = gets.strip.chomp
     if @stations.map(&:name).include?(name)
       'Станция уже существует. Отмена'
     else
       @stations << Station.new(name)
       "Станция #{name} успешно создана!"
     end
+  rescue ArgumentError => e
+    puts e.to_s
   end
 
   def available_stations
-    puts 'Доступные станции: '
     if @stations.empty?
       'Список станций пуст. Для начала создайте станцию.'
     else
+      puts 'Доступные станции: '
       puts @stations.map(&:name)
     end
   end

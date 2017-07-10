@@ -25,7 +25,6 @@ class Game
     @routes = []
     @trains = []
     @vans = []
-    fill
   end
 
   def menu
@@ -52,7 +51,7 @@ class Game
     choise
   end
 
-  # private
+  private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -61,21 +60,15 @@ class Game
     @action = gets.to_i
     case @action
     when 1
-      print 'Введите название новой станции: '
-      name = gets.strip.chomp
-      create_station(name)
+      puts create_station
     when 2
-      available_stations
+      puts available_stations
     when 3
       trains_count
       trains_list_on_station
     when 4
-      if @stations.empty?
-        puts 'Список станций пуст. Создайте пару станций.'
-      else
-        available_stations
-        puts pre_create_route_actions
-      end
+      puts available_stations
+      puts pre_create_route_actions
     when 5
       puts pre_edit_route
     when 6
@@ -108,28 +101,13 @@ class Game
       print 'Введите номер поезда: '
       id = gets.strip.chomp
       puts trains_include?(id) ? where_to_move_train(id) : no_such_train(id)
-    when 15
-      @trains.each { |train| puts "#{train.id}, #{train.route}, #{train.move}" }
     when 0
       'Всего хорошего! Приходите еще!'
     end
   end
 
-  def fill
-    puts create_station('aaa')
-    puts create_station('bbb')
-    puts create_station('ccc')
-    puts create_route('ccc', 'bbb')
-    puts create_train('vvv-45', 'g', 'НЭВЗ')
-    path_assignment('vvv-45', 1)
-    puts 'Увеличение скорости'
-    change_speed('vvv-45', 'up')
-    puts 'Движение'
-    where_to_move_train('vvv-45')
-  end
-
   def didnt_understand_you
-    'Ввод не распознан. Попробуйте еще раз. Отмена.'
+    puts 'Ввод не распознан. Попробуйте еще раз. Отмена.'
   end
 
   def puts_with_effects(string)

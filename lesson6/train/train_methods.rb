@@ -39,13 +39,11 @@ module TrainMethods
   end
 
   def create_train_exceptions_handling
-    begin
-      puts first_step_to_create_train
-    rescue ArgumentError => e
-      puts_with_effects(e.to_s)
-      puts 'Попробуем еще раз...'
-      retry
-    end
+    puts first_step_to_create_train
+  rescue ArgumentError => e
+    puts_with_effects(e.to_s)
+    puts 'Попробуем еще раз...'
+    retry
   end
 
   def first_step_to_create_train
@@ -63,7 +61,9 @@ module TrainMethods
     if trains_include?(id)
       "Поезд #{id} уже существует. Придумайте другой. Отмена."
     else
-      print 'Укажите производителя поезда: '
+      puts 'Укажите производителя поезда.'
+      puts 'Формат - не менее 3 букв или цифр. Сторонние символы не допускаются.'
+      print '==> '
       manufacturer = gets.strip.chomp
       create_train(id, type, manufacturer)
     end
