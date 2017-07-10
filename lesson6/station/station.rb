@@ -11,10 +11,10 @@ class Station
 
   def initialize(name)
     @name = name
+    validate!
     @trains = []
     self.class.list << self
     register_instances
-    validate!
   end
 
   def self.list
@@ -34,7 +34,7 @@ class Station
   private
 
   def validate!
-    raise ArgumentError, 'Название не может быть короче 3 символов' if name !~ TITLE_FORMAT
+    raise ArgumentError, 'Название не может быть короче 3 букв' if name !~ TITLE_FORMAT
     true
   end
 

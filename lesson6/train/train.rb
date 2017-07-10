@@ -13,12 +13,12 @@ class Train
   def initialize(id, manufacturer)
     @id = id
     @manufacturer = manufacturer
+    validate!
     @vans = []
     @speed = 0
     @move = 0
     @was_moved = false
     @@list[id] = self
-    validate!
   end
 
   def self.find(train)
@@ -73,50 +73,50 @@ class Train
   end
 
   def move_forward
-    if !@route
+    if !route
       no_route_yet
-    elsif @move + 1 >= @route.length
+    elsif @move + 1 >= route.waypoints.length
       stop
-      @move = @route.length - 1
-      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{@route[@move]}\' и остановлен."
+      @move = route.waypoints.length - 1
+      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{route.waypoints[@move].name}\' и остановлен."
     elsif @speed == 0
       'Для движения увеличьте у поезда скорость'
     else
       @was_moved = true
       @move += 1
-      @route[@move]
+      route.waypoints[@move]
     end
   end
 
   def move_backward
-    if !@route
+    if !route
       no_route_yet
     elsif @move - 1 < 0
       stop
       @move = 0
-      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{@route[@move]}\' и остановлен."
+      "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{route.waypoints[@move].name}\' и остановлен."
     elsif @speed == 0
       'Для движения увеличьте у поезда скорость'
     else
       @move -= 1
-      @route[@move]
+      route.waypoints[@move]
     end
   end
 
   def previous_station
-    if @route
-      @was_moved ? @route[@move - 1] : 'Это новый поезд. Предыдущей станции нет.'
+    if route
+      @was_moved ? route.waypoints[@move - 1] : 'Это новый поезд. Предыдущей станции нет.'
     else
       no_route_yet
     end
   end
 
   def now_station
-    @route ? @route[@move]: no_route_yet
+    route ? route.waypoints[@move] : no_route_yet
   end
 
   def next_station
-    @route ? @route[@move + 1] : no_route_yet
+    route ? route.waypoints[@move + 1] : no_route_yet
   end
 
   protected

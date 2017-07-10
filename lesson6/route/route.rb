@@ -2,38 +2,34 @@ class Route
   include InstanceCounter
   include ObjectValidation
 
-  attr_reader :id, :waypoints
+  attr_reader :id, :waypoints, :start, :finish
 
-  ROUTE_WAYPOINT_FORMAT = Station::TITLE_FORMAT
-
-  def initialize(id, start_point, end_point)
+  def initialize(id, start, finish)
     @id = id
-    @waypoints = [start_point, end_point]
-    register_instances
+    @waypoints = [start, finish]
     validate!
+    register_instances
   end
 
   def add(station)
-    @waypoints.insert(-2, station)
+    waypoints.insert(-2, station)
+    "Станция \'#{station.name}\' успешно добавлена в маршрут."
   end
 
   def delete(station)
-    if @waypoints.include? station
-      @waypoints.delete(station)
-    else
-      "Станции \'#{station}\' не существует на этом маршруте."
-    end
+    waypoints.delete(station)
+    "Станция \'#{station.name}\' успешно удалена из маршрута."
   end
 
   def list
-    @waypoints.each { |station| "#{station} " }
+    waypoints.each { |station| "#{station.name} " }
   end
 
   private
 
   def validate!
-    raise ArgumentError, 'Проверьте правильность ввода начальной точки - не менее 3 букв' if @waypoints[0] !~ ROUTE_WAYPOINT_FORMAT
-    raise ArgumentError, 'Проверьте правильность ввода конечной точки - не менее 3 букв' if @waypoints[-1] !~ ROUTE_WAYPOINT_FORMAT
+    raise ArgumentError unless waypoints[0].is_a? Station
+    raise ArgumentError unless waypoints[1].is_a? Station
     true
   end
 end

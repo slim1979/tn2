@@ -2,10 +2,14 @@ module TrainMethods
   def pre_path_assignment
     puts 'Доступные поезда: '
     @trains.each do |train|
-      train.route ? (puts "Поезд #{train.id}->#{train.route} ") : (puts "Поезд #{train.id}-> маршрут не назначен ")
+      if train.route
+        puts "Поезд #{train.id}-> #{train.route.waypoints.map(&:name)} "
+      else
+        puts "Поезд #{train.id}-> маршрут не назначен "
+      end
     end
     puts 'Доступные маршруты: '
-    @routes.each { |route| puts "Маршрут #{route.id}->#{route.waypoints} " }
+    @routes.each_with_index { |route, route_index| puts "Маршрут #{route.id}-> #{route_stations(route_index)} " }
 
     puts 'Введите номер поезда и номер маршрута для него: '
     print 'Номер поезда: '
@@ -13,7 +17,7 @@ module TrainMethods
     print 'Номер маршрута: '
     route_id = gets.to_i
 
-    if trains_include?(train_id) && @routes.map(&:id).include?(route_id)
+    if trains_include?(train_id) && routes_include?(route_id)
       path_assignment(train_id, route_id)
     else
       'Вы неверно ввели номер поезда или номер маршрута.'
@@ -25,10 +29,9 @@ module TrainMethods
     train = @trains[index]
 
     index = routes_index(route_id)
-    route = @routes[index]
-    train.route = route.waypoints
+    train.route = @routes[index]
 
-    index = stations_index(train.route.first)
+    index = stations_index(train.route.waypoints.first)
     station = @stations[index]
     message = station.train_arrival(train)
 
@@ -53,8 +56,9 @@ module TrainMethods
 
   def second_step_to_create_train(type)
     puts 'Придумайте номер / идентификатор для поезда.'
-    puts 'Формат - три буквы или цифры в любом порядке, дефис - по желанию,'
-    print 'и еще 2 буквы или цифры после дефиса: '
+    puts 'Формат - три буквы или цифры в любом порядке,'
+    puts 'дефис - по желанию, и 2 буквы или цифры после дефиса.'
+    print '==> '
     id = gets.strip.chomp
     if trains_include?(id)
       "Поезд #{id} уже существует. Придумайте другой. Отмена."
@@ -103,11 +107,11 @@ module TrainMethods
     else
       index = stations_index(departure)
       station = @stations[index]
-      station.train_departure(train)
+      puts station.train_departure(train)
 
       index = stations_index(arrival)
       station = @stations[index]
-      station.train_arrival(train)
+      puts station.train_arrival(train)
     end
   end
 
