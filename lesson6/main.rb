@@ -52,7 +52,7 @@ class Game
     choise
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -67,47 +67,47 @@ class Game
     when 2
       available_stations
     when 3
-      available_stations
+      trains_count
       trains_list_on_station
     when 4
       if @stations.empty?
-        'Список станций пуст. Создайте пару станций.'
+        puts 'Список станций пуст. Создайте пару станций.'
       else
         available_stations
-        pre_create_route_actions
+        puts pre_create_route_actions
       end
     when 5
-      pre_edit_route
+      puts pre_edit_route
     when 6
-      create_van
+      puts create_van
     when 7
-      create_train_exceptions_handling
+      puts create_train_exceptions_handling
     when 8
-      pre_add_van
+      puts pre_add_van
     when 9
-      pre_delete_van
+      puts pre_delete_van
     when 10
       if @routes.empty?
         'Список маршрутов пуст. Создайте маршрут.'
       else
-        pre_path_assignment
+        puts pre_path_assignment
       end
     when 11
       train_choise
       choise = 'up'
-      trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
     when 12
       train_choise
       choise = 'down'
-      trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
     when 13
       train_choise
-      trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
+      puts trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
     when 14
       available_trains
       print 'Введите номер поезда: '
       id = gets.strip.chomp
-      trains_include?(id) ? where_to_move_train(id) : no_such_train(id)
+      puts trains_include?(id) ? where_to_move_train(id) : no_such_train(id)
     when 15
       @trains.each { |train| puts "#{train.id}, #{train.route}, #{train.move}" }
     when 0
@@ -116,12 +116,16 @@ class Game
   end
 
   def fill
-    create_station('aaa')
-    create_station('bbb')
-    create_station('ccc')
-    create_route('ccc', 'bbb')
-    create_train('vvv-45', 'g', 'НЭВЗ')
-    pre_path_assignment
+    puts create_station('aaa')
+    puts create_station('bbb')
+    puts create_station('ccc')
+    puts create_route('ccc', 'bbb')
+    puts create_train('vvv-45', 'g', 'НЭВЗ')
+    path_assignment('vvv-45', 1)
+    puts 'Увеличение скорости'
+    change_speed('vvv-45', 'up')
+    puts 'Движение'
+    where_to_move_train('vvv-45')
   end
 
   def didnt_understand_you

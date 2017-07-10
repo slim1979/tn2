@@ -13,8 +13,8 @@ class Van
     @number = number
     @kind = kind
     @manufacturer = manufacturer
-    @status = 'free'
     validate!
+    @status = 'free'
   end
 
   protected
