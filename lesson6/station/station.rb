@@ -5,7 +5,7 @@ class Station
 
   attr_reader :name, :trains
 
-  TITLE_FORMAT = /^[a-zа-я]{3,}$/i
+  TITLE_FORMAT = /^[a-zа-я0-9]{3,}-?\s?([a-zа-я0-9]+)?$/i
 
   @list = []
 
@@ -34,7 +34,7 @@ class Station
   private
 
   def validate!
-    raise ArgumentError, 'Название не может быть короче 3 букв' if name !~ TITLE_FORMAT
+    raise ArgumentError, 'Введенное название не соотвествует требуемому формату.' if name !~ TITLE_FORMAT
     true
   end
 

@@ -3,24 +3,35 @@ module VanMethods
     puts 'Какой вагон Вы хотите создать?'
     print '(п)ассажирский или (г)рузовой: '
     type = gets.strip.chomp.downcase
-    print 'Вид - Спальный (СВ), Купейный (КВ): ' if %w[п g].include?(type)
-    print 'Вид - Угольный, Зерновой, Цистерна: ' if %w[г u].include?(type)
-    kind = gets.strip.chomp
-    print 'Укажите производитя вагона: '
-    manufacturer = gets.strip.chomp
-    adding_to_vans(type, kind, manufacturer)
+    create_passenger_van if %w[п g].include? type
+    create_cargo_van if %w[г u].include? type
+    raise ArgumentError, 'Неверный тип вагона!' unless %w[п г g u].include? type
+  rescue ArgumentError => e
+    puts_with_effects e.to_s
   end
 
-  def adding_to_vans(type, kind, manufacturer)
-    number = @vans.empty? ? 1 : @vans[-1].number + 1
-    if %w[п g].include?(type)
-      @vans << PassengerVan.new(number, kind, manufacturer)
-      "Пассажиркий вагон ##{@vans[-1].number} создан."
-    elsif %w[г u].include?(type)
-      @vans << CargoVan.new(number, kind, manufacturer)
-      "Грузовой вагон ##{@vans[-1].number} создан"
-    else
-      'Такого типа вагонов не существует. Попробуйте еще раз. Отмена.'
-    end
+  def number
+    @vans.empty? ? 1 : @vans[-1].number + 1
+  end
+
+  def kind
+    puts 'Укажите вид вагона: '
+    print '==> '
+    gets.strip.chomp
+  end
+
+  def manufacturer
+    print 'Укажите производителя вагона: '
+    gets.strip.chomp
+  end
+
+  def create_passenger_van
+    @vans << PassengerVan.new(number, kind, manufacturer)
+    puts "Пассажиркий вагон ##{@vans[-1].number} создан."
+  end
+
+  def create_cargo_van
+    @vans << CargoVan.new(number, kind, manufacturer)
+    puts "Грузовой вагон ##{@vans[-1].number} создан"
   end
 end

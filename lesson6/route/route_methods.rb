@@ -1,32 +1,30 @@
 module RouteMethods
   def pre_create_route_actions
-    print 'Введите начальную точку маршрута: '
-    start = gets.strip.chomp
-    print 'Введите конечную точку маршрута: '
-    finish = gets.strip.chomp
-    create_route(start, finish)
+    unless @stations.empty?
+      print 'Введите начальную точку маршрута: '
+      start = gets.strip.chomp
+      print 'Введите конечную точку маршрута: '
+      finish = gets.strip.chomp
+      create_route(start, finish)
+    end
   end
 
   def create_route(start, finish)
-    stations = @stations.map(&:name)
-    if stations.include?(start) && stations.include?(finish)
-      start_station = stations.index start
-      finish_station = stations.index finish
-      route_id = @routes.empty? ? 1 : @routes[-1].id + 1
-      @routes << Route.new(route_id, @stations[start_station], @stations[finish_station])
-      "Маршрут №#{@routes[-1].id} #{@routes[-1].waypoints.map(&:name)} создан"
-    elsif !stations.include?(start)
-      'Начальная точка маршрута не существует!'
-    elsif !stations.include?(finish)
-      'Конечная точка маршрута не существует!'
-    end
+    stations_names_array = @stations.map(&:name)
+    start_station = @stations[stations_names_array.index start]
+    finish_station = @stations[stations_names_array.index finish]
+    route_id = @routes.empty? ? 1 : @routes[-1].id + 1
+    @routes << Route.new(route_id, start_station, finish_station)
+    "Маршрут №#{@routes[-1].id} #{@routes[-1].waypoints.map(&:name)} создан"
+  rescue TypeError
+    puts "Станции с названием #{start} не существует. Маршрут не создан." if start_station.nil?
+    puts "Станции с названием #{finish} не существует. Маршрут не создан." if finish_station.nil?
   end
 
   def route_and_waypoints
     index = @routes.size
     index.times do |route_index|
-      print "Маршрут #{route_index + 1} --> "
-      print "#{@routes[route_index].waypoints.map(&:name)} \n"
+      print "Маршрут #{route_index + 1} -> #{@routes[route_index].waypoints.map(&:name)} \n"
     end
   end
 
