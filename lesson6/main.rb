@@ -51,7 +51,7 @@ class Game
     choise
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -80,11 +80,7 @@ class Game
     when 9
       puts pre_delete_van
     when 10
-      if @routes.empty?
-        'Список маршрутов пуст. Создайте маршрут.'
-      else
-        puts pre_path_assignment
-      end
+      puts path_assignment
     when 11
       train_choise
       choise = 'up'
