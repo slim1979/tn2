@@ -1,84 +1,98 @@
 module TrainMethods
-  def pre_path_assignment
-    puts 'Доступные поезда: '
+  def available_trains_with_waypoints
+    puts 'Нет доступных поездов. ' if @trains.empty?
+    puts 'Доступные поезда: ' unless @trains.empty?
     @trains.each do |train|
-      if train.route
-        puts "Поезд #{train.id}-> #{train.route.waypoints.map(&:name)} "
-      else
-        puts "Поезд #{train.id}-> маршрут не назначен "
-      end
-    end
-    puts 'Доступные маршруты: '
-    @routes.each_with_index { |route, route_index| puts "Маршрут #{route.id}-> #{route_stations(route_index)} " }
-
-    puts 'Введите номер поезда и номер маршрута для него: '
-    print 'Номер поезда: '
-    train_id = gets.strip.chomp
-    print 'Номер маршрута: '
-    route_id = gets.to_i
-
-    if trains_include?(train_id) && routes_include?(route_id)
-      path_assignment(train_id, route_id)
-    else
-      'Вы неверно ввели номер поезда или номер маршрута.'
+      puts "Поезд #{train.id}-> #{train.route.waypoints.map(&:name)} " if train.route
+      puts "Поезд #{train.id}-> маршрут не назначен " unless train.route
     end
   end
 
-  def path_assignment(train_id, route_id)
-    index = trains_map_index(train_id)
-    train = @trains[index]
+  def available_routes
+    puts 'Нет доступных маршрутов. ' if @routes.empty?
+    puts 'Доступные маршруты: ' unless @routes.empty?
+    @routes.each_with_index do |route, route_index|
+      puts "Маршрут #{route.id} -> #{route_stations(route_index)} "
+    end
+  end
 
-    index = routes_index(route_id)
-    train.route = @routes[index]
+  def train_id
+    print 'Номер поезда: '
+    gets.strip.chomp
+  end
 
-    index = stations_index(train.route.waypoints.first)
-    station = @stations[index]
-    message = station.train_arrival(train)
+  def route_id
+    print 'Номер маршрута: '
+    gets.to_i
+  end
 
-    "Маршрут ##{route_id} успешно добавлен к поезду #{train_id}. " + message
+  def path_assignment
+    available_trains_with_waypoints
+    available_routes
+    unless @trains.empty? || @routes.empty?
+      puts 'Введите номер поезда и номер маршрута для него: '
+      index = trains_map_index(train_id)
+      train = @trains[index]
+
+      index = routes_index(route_id)
+      train.route = @routes[index]
+
+      index = stations_index(train.route.waypoints.first)
+      station = @stations[index]
+      message = station.train_arrival(train)
+
+      "Маршрут ##{train.route.id} успешно добавлен к поезду #{train.id}. \n" + message
+    end
   end
 
   def create_train_exceptions_handling
+    attempt ||= 0
     puts first_step_to_create_train
   rescue ArgumentError => e
+    attempt += 1
     puts_with_effects(e.to_s)
-    puts 'Попробуем еще раз...'
-    retry
+    puts "Попробуем еще раз... Попыток: #{3 - attempt}" unless attempt > 2
+    retry unless attempt > 2
   end
 
   def first_step_to_create_train
     print 'Какой поезд хотите создать - (п)ассажирский или (г)рузовой?: '
     type = gets.strip.chomp.downcase
-    second_step_to_create_train(type)
+    create_passenger_train if %w[п g].include? type
+    create_cargo_train if %w[г u].include? type
+    raise ArgumentError, 'Проверьте правильность ввода типа поезда' unless %w[п г g u].include? type
   end
 
-  def second_step_to_create_train(type)
+  def new_train_id_text
     puts 'Придумайте номер / идентификатор для поезда.'
     puts 'Формат - три буквы или цифры в любом порядке,'
     puts 'дефис - по желанию, и 2 буквы или цифры после дефиса.'
     print '==> '
-    id = gets.strip.chomp
-    if trains_include?(id)
-      "Поезд #{id} уже существует. Придумайте другой. Отмена."
-    else
-      puts 'Укажите производителя поезда.'
-      puts 'Формат - не менее 3 букв или цифр. Сторонние символы не допускаются.'
-      print '==> '
-      manufacturer = gets.strip.chomp
-      create_train(id, type, manufacturer)
-    end
   end
 
-  def create_train(id, type, manufacturer)
-    if %w[п g].include?(type)
-      @trains << PassengerTrain.new(id, manufacturer)
-      "Пассажирский поезд #{id} создан!"
-    elsif %w[г u].include?(type)
-      @trains << CargoTrain.new(id, manufacturer)
-      "Грузовой поезд #{id} создан!"
-    else
-    raise ArgumentError, 'Проверьте правильность ввода типа поезда'
-    end
+  def new_train_id
+    new_train_id_text
+    id = gets.strip.chomp
+    not_uniq = trains_include? id
+    raise ArgumentError, 'Такой поезд уже существует!' if not_uniq
+    id unless not_uniq
+  end
+
+  def manufacturer
+    puts 'Укажите производителя поезда.'
+    puts 'Формат - не менее 3 букв или цифр. Сторонние символы не допускаются.'
+    print '==> '
+    gets.strip.chomp
+  end
+
+  def create_passenger_train
+    @trains << PassengerTrain.new(new_train_id, manufacturer)
+    puts "Пассажирский поезд #{@trains[-1].id} создан!"
+  end
+
+  def create_cargo_train
+    @trains << CargoTrain.new(new_train_id, manufacturer)
+    puts "Грузовой поезд #{@trains[-1].id} создан!"
   end
 
   def where_to_move_train(id)
@@ -197,7 +211,9 @@ module TrainMethods
 
   def available_trains
     puts 'Доступные поезда:'
-    @trains.each { |train| puts "Поезд #{train.id}. Тип: #{train.type}, вагонов: #{train.vans.count}, скорость: #{train.speed}."}
+    @trains.each do |train|
+      print "Поезд #{train.id}. Тип: #{train.type}, маршрут: #{train.route.waypoints.map(&:name)}, вагонов: #{train.vans.count}, скорость: #{train.speed}."
+    end
   end
 
   def train_choise
