@@ -16,6 +16,8 @@ module RouteMethods
     route_id = @routes.empty? ? 1 : @routes[-1].id + 1
     @routes << Route.new(route_id, start_station, finish_station)
     "Маршрут №#{@routes[-1].id} #{@routes[-1].waypoints.map(&:name)} создан"
+  # TypeError выбрасывается тогда, когда пользователь ввел название несуществующей станции,
+  # в результате чего start_station и finish_station равны nil
   rescue TypeError
     puts "Станции с названием #{start} не существует. Маршрут не создан." if start_station.nil?
     puts "Станции с названием #{finish} не существует. Маршрут не создан." if finish_station.nil?
