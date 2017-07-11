@@ -1,4 +1,6 @@
 module VanMethods
+  private
+
   def create_van
     puts 'Какой вагон Вы хотите создать?'
     print '(п)ассажирский или (г)рузовой: '
@@ -10,28 +12,28 @@ module VanMethods
     puts_with_effects e.to_s
   end
 
-  def number
+  def van_number
     @vans.empty? ? 1 : @vans[-1].number + 1
   end
 
-  def kind
+  def van_kind
     puts 'Укажите вид вагона: '
     print '==> '
     gets.strip.chomp
   end
 
-  def manufacturer
+  def van_manufacturer
     print 'Укажите производителя вагона: '
     gets.strip.chomp
   end
 
   def create_passenger_van
-    @vans << PassengerVan.new(number, kind, manufacturer)
+    @vans << PassengerVan.new(van_number, van_kind, van_manufacturer)
     puts "Пассажиркий вагон ##{@vans[-1].number} создан."
   end
 
   def create_cargo_van
-    @vans << CargoVan.new(number, kind, manufacturer)
+    @vans << CargoVan.new(van_number, van_kind, van_manufacturer)
     puts "Грузовой вагон ##{@vans[-1].number} создан"
   end
 end

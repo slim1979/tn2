@@ -48,10 +48,10 @@ class Game
     puts '  14. Переместить поезд по маршруту'
     puts '======================================='
     puts '  0. Выйти из программы'
-    choise
+    choise_exceptions_handling
   end
 
-  # private
+  private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -94,12 +94,16 @@ class Game
       puts trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
     when 14
       available_trains
-      print 'Введите номер поезда: '
-      id = gets.strip.chomp
-      puts trains_include?(id) ? where_to_move_train(id) : no_such_train(id)
+      puts move_train
     when 0
       'Всего хорошего! Приходите еще!'
     end
+  end
+
+  def choise_exceptions_handling
+    choise
+  rescue StandardError => e
+    puts e.to_s
   end
 
   def didnt_understand_you

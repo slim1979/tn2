@@ -1,4 +1,6 @@
 module StationMethods
+  private
+
   def create_station
     print 'Введите название новой станции: '
     name = gets.strip.chomp

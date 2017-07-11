@@ -1,4 +1,6 @@
 module TrainMethods
+  private
+
   def available_trains_with_waypoints
     puts 'Нет доступных поездов. ' if @trains.empty?
     puts 'Доступные поезда: ' unless @trains.empty?
@@ -16,12 +18,12 @@ module TrainMethods
     end
   end
 
-  def train_id
-    print 'Номер поезда: '
+  def exists_train_id
+    print 'Введите номер поезда: '
     gets.strip.chomp
   end
 
-  def route_id
+  def exists_route_id
     print 'Номер маршрута: '
     gets.to_i
   end
@@ -31,10 +33,10 @@ module TrainMethods
     available_routes
     unless @trains.empty? || @routes.empty?
       puts 'Введите номер поезда и номер маршрута для него: '
-      index = trains_map_index(train_id)
+      index = trains_map_index(exists_train_id)
       train = @trains[index]
 
-      index = routes_index(route_id)
+      index = routes_index(exists_route_id)
       train.route = @routes[index]
 
       index = stations_index(train.route.waypoints.first)
@@ -78,7 +80,7 @@ module TrainMethods
     id unless not_uniq
   end
 
-  def manufacturer
+  def train_manufacturer
     puts 'Укажите производителя поезда.'
     puts 'Формат - не менее 3 букв или цифр. Сторонние символы не допускаются.'
     print '==> '
@@ -86,47 +88,31 @@ module TrainMethods
   end
 
   def create_passenger_train
-    @trains << PassengerTrain.new(new_train_id, manufacturer)
+    @trains << PassengerTrain.new(new_train_id, train_manufacturer)
     puts "Пассажирский поезд #{@trains[-1].id} создан!"
   end
 
   def create_cargo_train
-    @trains << CargoTrain.new(new_train_id, manufacturer)
+    @trains << CargoTrain.new(new_train_id, train_manufacturer)
     puts "Грузовой поезд #{@trains[-1].id} создан!"
   end
 
-  def where_to_move_train(id)
+  def train_moving_vector
     print 'Куда двигать поезд - (в)перед или (н)азад: '
-    choise = gets.strip.chomp.downcase
-    if %w[в d н y].include?(choise)
-      move(id, choise)
-    else
-      didnt_understand_you
-    end
+    gets.strip.chomp.downcase
   end
 
-  def move(id, choise)
-    index = trains_map_index(id)
+  def move_train
+    index = trains_map_index(exists_train_id)
     train = @trains[index]
-    departure = train.now_station
-    arrival = train.move_forward if %w[в d].include?(choise)
-    arrival = train.move_backward if %w[н y].include?(choise)
-    departure_arrival(train, departure, arrival)
-  end
-
-  def departure_arrival(train, departure, arrival)
-    index = stations_index(arrival)
-    if index.nil?
-      arrival
-    else
-      index = stations_index(departure)
-      station = @stations[index]
-      puts station.train_departure(train)
-
-      index = stations_index(arrival)
-      station = @stations[index]
-      puts station.train_arrival(train)
-    end
+    choosen_vector = train_moving_vector
+    train.move_forward if %w[в d].include?(choosen_vector)
+    train.move_backward if %w[н y].include?(choosen_vector)
+    raise ArgumentError unless %w[в d н y].include?(choosen_vector)
+  rescue TypeError
+    no_such_train(exists_train_id) if train.nil?
+  rescue ArgumentError
+    puts_with_effects 'Неправильно выбрано направление'
   end
 
   def pre_add_van
@@ -212,7 +198,7 @@ module TrainMethods
   def available_trains
     puts 'Доступные поезда:'
     @trains.each do |train|
-      print "Поезд #{train.id}. Тип: #{train.type}, маршрут: #{train.route.waypoints.map(&:name)}, вагонов: #{train.vans.count}, скорость: #{train.speed}."
+      print "Поезд #{train.id}. Тип: #{train.type}, вагонов: #{train.vans.count}, скорость: #{train.speed}.\n"
     end
   end
 
