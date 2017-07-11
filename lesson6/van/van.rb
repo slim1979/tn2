@@ -19,8 +19,8 @@ class Van
   protected
 
   def validate!
+    super
     raise ArgumentError, 'Проверьте правильность заполнения типа вагона' if kind !~ VAN_KIND
-    raise ArgumentError, 'Проверьте правильность заполнения наименования производителя' if manufacturer !~ VAN_MANUFACTURER
     true
   end
 end
