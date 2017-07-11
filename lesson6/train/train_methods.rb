@@ -51,8 +51,8 @@ module TrainMethods
   rescue ArgumentError => e
     attempt += 1
     puts_with_effects(e.to_s)
-    puts "Попробуем еще раз... Попыток: #{3 - attempt}" unless attempt > 2
-    retry unless attempt > 2
+    puts "Попробуем еще раз... Попыток: #{3 - attempt}" unless attempt >= 3
+    retry unless attempt >= 3
   end
 
   def first_step_to_create_train
