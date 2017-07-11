@@ -125,8 +125,8 @@ class Train
   end
 
   def validate!
+    super
     raise ArgumentError, 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
-    raise ArgumentError, 'Неверный формат наименования производителя' if manufacturer !~ Manufacturer::TRAIN_MANUFACTURER_FORMAT
     true
   end
 end
