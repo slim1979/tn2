@@ -1,4 +1,6 @@
 module RouteMethods
+  private
+
   def pre_create_route_actions
     unless @stations.empty?
       print 'Введите начальную точку маршрута: '
@@ -13,8 +15,8 @@ module RouteMethods
     stations_names_array = @stations.map(&:name)
     start_station = @stations[stations_names_array.index start]
     finish_station = @stations[stations_names_array.index finish]
-    route_id = @routes.empty? ? 1 : @routes[-1].id + 1
-    @routes << Route.new(route_id, start_station, finish_station)
+    new_route_id = @routes.empty? ? 1 : @routes[-1].id + 1
+    @routes << Route.new(new_route_id, start_station, finish_station)
     "Маршрут №#{@routes[-1].id} #{@routes[-1].waypoints.map(&:name)} создан"
   # TypeError выбрасывается тогда, когда пользователь ввел название несуществующей станции,
   # в результате чего start_station и finish_station равны nil

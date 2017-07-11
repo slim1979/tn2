@@ -78,12 +78,13 @@ class Train
       stop
       @move = route.waypoints.length - 1
       "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{route.waypoints[@move].name}\' и остановлен."
-    elsif @speed == 0
+    elsif @speed.zero?
       'Для движения увеличьте у поезда скорость'
     else
       @was_moved = true
+      route.waypoints[@move].train_departure(self)
       @move += 1
-      route.waypoints[@move]
+      route.waypoints[@move].train_arrival(self)
     end
   end
 
@@ -94,11 +95,12 @@ class Train
       stop
       @move = 0
       "Дальше двигаться некуда. Поезд достиг конечной станции -  \'#{route.waypoints[@move].name}\' и остановлен."
-    elsif @speed == 0
+    elsif @speed.zero?
       'Для движения увеличьте у поезда скорость'
     else
+      route.waypoints[@move].train_departure(self)
       @move -= 1
-      route.waypoints[@move]
+      route.waypoints[@move].train_arrival(self)
     end
   end
 
