@@ -103,14 +103,15 @@ module TrainMethods
   end
 
   def move_train
-    index = trains_map_index(exists_train_id)
+    id = exists_train_id
+    index = trains_map_index(id)
     train = @trains[index]
     choosen_vector = train_moving_vector
     train.move_forward if %w[в d].include?(choosen_vector)
     train.move_backward if %w[н y].include?(choosen_vector)
     raise ArgumentError unless %w[в d н y].include?(choosen_vector)
   rescue TypeError
-    no_such_train(exists_train_id) if train.nil?
+    no_such_train(id) if train.nil?
   rescue ArgumentError
     puts_with_effects 'Неправильно выбрано направление'
   end
