@@ -8,7 +8,7 @@ class Van
   VAN_KIND = /^[a-zа-я0-9]{2,}-?\s?([a-zа-я0-9]+)?$/i
   VAN_MANUFACTURER = /^[a-zа-я0-9]{3,}$/i
 
-  def initialize(number, kind, manufacturer)
+  def initialize(number, kind, *, manufacturer)
     @number = number
     @kind = kind
     @manufacturer = manufacturer
