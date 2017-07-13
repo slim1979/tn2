@@ -22,18 +22,28 @@ module VanMethods
     gets.strip.chomp
   end
 
+  def van_seats
+    print 'Введите количество мест в вагоне: '
+    gets.to_i
+  end
+
+  def van_value
+    print 'Введите доступный объем вагона: '
+    gets.to_i
+  end
+
   def van_manufacturer
     print 'Укажите производителя вагона: '
     gets.strip.chomp
   end
 
   def create_passenger_van
-    @vans << PassengerVan.new(van_number, van_kind, van_manufacturer)
+    @vans << PassengerVan.new(van_number, van_kind, van_seats, van_manufacturer)
     puts "Пассажиркий вагон ##{@vans[-1].number} создан."
   end
 
   def create_cargo_van
-    @vans << CargoVan.new(van_number, van_kind, van_manufacturer)
+    @vans << CargoVan.new(van_number, van_kind, van_vakue, van_manufacturer)
     puts "Грузовой вагон ##{@vans[-1].number} создан"
   end
 end

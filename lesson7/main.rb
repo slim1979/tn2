@@ -51,7 +51,7 @@ class Game
     choise_exceptions_handling
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
