@@ -27,7 +27,7 @@ module VanMethods
     gets.to_i
   end
 
-  def van_value
+  def van_volume
     print 'Введите доступный объем вагона: '
     gets.to_i
   end
@@ -43,7 +43,7 @@ module VanMethods
   end
 
   def create_cargo_van
-    @vans << CargoVan.new(van_number, van_kind, van_vakue, van_manufacturer)
+    @vans << CargoVan.new(van_number, van_kind, van_volume, van_manufacturer)
     puts "Грузовой вагон ##{@vans[-1].number} создан"
   end
 end
