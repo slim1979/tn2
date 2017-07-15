@@ -37,7 +37,7 @@ module StationMethods
     else
       station = @stations[index]
       puts "Поезда на станции #{station.name}:"
-      station.trains.each { |train| puts "Поезд #{train.id}, тип: #{train.type}, вагоны: #{train.vans.count} " }
+      station.self_trains
     end
   end
 
