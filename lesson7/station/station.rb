@@ -22,13 +22,24 @@ class Station
   end
 
   def train_arrival(train)
-    @trains << train
-    "Поезд #{train.id} прибыл на станцию #{name}!"
+    if trains.include? train
+      "У поезда #{train} на станции #{name} был изменен маршрут."
+    else
+      trains << train
+      "Поезд #{train.id} прибыл на станцию #{name}!"
+    end
   end
 
   def train_departure(train)
-    @trains.delete(train)
+    trains.delete(train)
     "Поезд #{train.id} покинул станцию #{name}!"
+  end
+
+  def self_trains
+    trains.each do |train|
+      puts "Поезд #{train.id}. Тип #{train.type}. Вагоны: #{train.vans.count}"
+      train.self_vans
+    end
   end
 
   private

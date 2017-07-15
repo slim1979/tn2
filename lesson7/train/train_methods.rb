@@ -45,6 +45,8 @@ module TrainMethods
 
       "Маршрут ##{train.route.id} успешно добавлен к поезду #{train.id}. \n" + message
     end
+  rescue TypeError => e
+    puts e.to_s
   end
 
   def create_train_exceptions_handling
@@ -122,7 +124,7 @@ module TrainMethods
     puts 'Доступные вагоны:'
     @vans.each { |van| puts "##{van.number}. Тип: #{van.type}, вид: #{van.kind}. " if van.status == 'free' }
     print 'Введите номер поезда: '
-    id = gets.to_i
+    id = gets.strip.chomp.downcase
     print 'Введите номер вагона: '
     number = gets.to_i
     if trains_include?(id) && @vans.map(&:number).include?(number)

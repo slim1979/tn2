@@ -16,6 +16,11 @@ module VanMethods
     @vans.empty? ? 1 : @vans[-1].number + 1
   end
 
+  def exists_van_number
+    print 'Введите номер вагона: '
+    gets.to_i
+  end
+
   def van_kind
     puts 'Укажите вид вагона: '
     print '==> '
@@ -39,11 +44,54 @@ module VanMethods
 
   def create_passenger_van
     @vans << PassengerVan.new(van_number, van_kind, van_seats, van_manufacturer)
-    puts "Пассажиркий вагон ##{@vans[-1].number} создан."
+    puts "пассажирский вагон ##{@vans[-1].number} создан."
   end
 
   def create_cargo_van
     @vans << CargoVan.new(van_number, van_kind, van_volume, van_manufacturer)
     puts "Грузовой вагон ##{@vans[-1].number} создан"
+  end
+
+  def buy_place_in_passenger_van
+    if PassengerVan.instances.nil?
+      puts 'Сначала надо создать пассажирский вагон'
+    elsif PassengerVan.instances
+      puts 'Выберите станцию.'
+      trains_count
+      trains_list_on_station
+      train_and_van_choise
+    end
+  end
+
+  def buy_place_in_cargo_van
+    if CargoVan.instances.nil?
+      puts 'Сначала надо создать грузовой вагон'
+    elsif CargoVan.instances
+      puts 'Выберите станцию.'
+      trains_count
+      trains_list_on_station
+      train_and_van_choise
+    end
+  end
+
+  def train_and_van_choise
+    index = trains_map_index exists_train_id
+    train = @trains[index]
+    index = train_vans_index train, exists_van_number
+    if train.is_a? PassengerTrain
+      train.vans[index].buy_ticket
+    elsif train.is_a? CargoTrain
+      train.vans[index].take_volume
+    else
+      didnt_understand_you
+    end
+  end
+
+  def all_vans_map_index(number)
+    @vans.map(&:number).index number
+  end
+
+  def train_vans_index(train, number)
+    train.vans.map(&:number).index number
   end
 end

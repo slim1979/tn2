@@ -25,6 +25,7 @@ class Game
     @routes = []
     @trains = []
     @vans = []
+    fill
   end
 
   def menu
@@ -37,21 +38,23 @@ class Game
     puts '   5. Редактировать маршрут'
     puts '**************** Вагон ****************'
     puts '   6. Создать вагон'
+    puts '   7. Купить место в пассажирском вагоне'
+    puts '   8. Купить место в грузовом вагоне'
     puts '**************** Поезд ****************'
-    puts '   7. Создать новый поезд'
-    puts '   8. Добавить вагоны'
-    puts '   9. Отцепить вагоны'
-    puts '  10. Назначить маршрут поезду'
-    puts '  11. Увеличить скорость поезда'
-    puts '  12. Уменьшить скорость поезда'
-    puts '  13. Остановить поезд'
-    puts '  14. Переместить поезд по маршруту'
+    puts '   9. Создать новый поезд'
+    puts '  10. Добавить вагоны'
+    puts '  11. Отцепить вагоны'
+    puts '  12. Назначить маршрут поезду'
+    puts '  13. Увеличить скорость поезда'
+    puts '  14. Уменьшить скорость поезда'
+    puts '  15. Остановить поезд'
+    puts '  16. Переместить поезд по маршруту'
     puts '======================================='
     puts '  0. Выйти из программы'
     choise_exceptions_handling
   end
 
-  # private
+  private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -74,30 +77,48 @@ class Game
     when 6
       puts create_van
     when 7
-      puts create_train_exceptions_handling
+      puts buy_place_in_passenger_van
     when 8
-      puts pre_add_van
+      puts buy_place_in_cargo_van
     when 9
-      puts pre_delete_van
+      puts create_train_exceptions_handling
     when 10
-      puts path_assignment
+      puts pre_add_van
     when 11
+      puts pre_delete_van
+    when 12
+      puts path_assignment
+    when 13
       train_choise
       choise = 'up'
       puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
-    when 12
+    when 14
       train_choise
       choise = 'down'
       puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
-    when 13
+    when 15
       train_choise
       puts trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
-    when 14
+    when 16
       available_trains
       puts move_train
     when 0
       'Всего хорошего! Приходите еще!'
     end
+  end
+
+  def fill
+    create_station
+    create_station
+    create_route(@stations.first.name, @stations.last.name)
+    create_passenger_train
+    create_cargo_train
+    path_assignment
+    path_assignment
+    create_van
+    create_van
+    pre_add_van
+    pre_add_van
   end
 
   def choise_exceptions_handling
