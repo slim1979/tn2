@@ -39,7 +39,7 @@ class Station
     trains.each { |train| yield train }
   end
 
-  # private
+  private
 
   def validate!
     raise ArgumentError, 'Введенное название не соотвествует требуемому формату.' if name !~ TITLE_FORMAT

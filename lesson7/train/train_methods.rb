@@ -1,5 +1,5 @@
 module TrainMethods
-  # private
+  private
 
   def available_trains_with_waypoints
     puts 'Нет доступных поездов. ' if @trains.empty?
