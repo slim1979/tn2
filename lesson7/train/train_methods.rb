@@ -1,5 +1,5 @@
 module TrainMethods
-  private
+  # private
 
   def available_trains_with_waypoints
     puts 'Нет доступных поездов. ' if @trains.empty?
@@ -33,7 +33,7 @@ module TrainMethods
     available_routes
     unless @trains.empty? || @routes.empty?
       puts 'Введите номер поезда и номер маршрута для него: '
-      index = trains_map_index(exists_train_id)
+      index = train_index(exists_train_id)
       train = @trains[index]
 
       index = routes_index(exists_route_id)
@@ -106,7 +106,7 @@ module TrainMethods
 
   def move_train
     id = exists_train_id
-    index = trains_map_index(id)
+    index = train_index(id)
     train = @trains[index]
     choosen_vector = train_moving_vector
     train.move_forward if %w[в d].include?(choosen_vector)
@@ -137,7 +137,7 @@ module TrainMethods
   def add_van(id, number)
     index = @vans.map(&:number).index number
     van = @vans[index]
-    index = trains_map_index(id)
+    index = train_index(id)
     train = @trains[index]
     train.add_van(van)
   end
@@ -147,7 +147,7 @@ module TrainMethods
     print 'Введите номер поезда, у которого Вы хотите отцепить вагон: '
     id = gets.to_i
     if trains_include?(id)
-      index = trains_map_index(id)
+      index = train_index(id)
       train = @trains[index]
       delete_van(train)
     else
@@ -177,24 +177,22 @@ module TrainMethods
     end
   end
 
-  def change_speed(id, choise)
-    index = trains_map_index(id)
-    train = @trains[index]
+  def change_speed(train, choise)
     print 'Введите скорость: '
     speed = gets.to_i
-    train.speed_up(speed) if choise == 'up'
-    train.speed_down(speed) if choise == 'down'
+    puts train.speed_up(speed) if choise == 'up'
+    puts train.speed_down(speed) if choise == 'down'
   end
 
-  def train_stop(id)
-    @trains.each { |train| train.stop if train.id == id }
+  def train_stop(train)
+    train.stop
   end
 
   def trains_include?(id)
     @trains.map(&:id).include?(id)
   end
 
-  def trains_map_index(id)
+  def train_index(id)
     @trains.map(&:id).index id
   end
 
@@ -207,8 +205,15 @@ module TrainMethods
 
   def train_choise
     available_trains
-    print 'Введите номер поезда: '
-    @id = gets.strip.chomp
+    id = exists_train_id
+    train = Train.find(id)
+    if train.nil?
+      no_such_train(id)
+    elsif !block_given?
+      puts train
+    else
+      yield train
+    end
   end
 
   def no_such_train(id)

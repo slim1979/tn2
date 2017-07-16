@@ -35,18 +35,14 @@ class Station
     "Поезд #{train.id} покинул станцию #{name}!"
   end
 
-  def self_trains
-    trains.each do |train|
-      puts "Поезд #{train.id}. Тип #{train.type}. Вагоны: #{train.vans.count}"
-      train.self_vans
-    end
+  def each_train
+    trains.each { |train| yield train }
   end
 
-  private
+  # private
 
   def validate!
     raise ArgumentError, 'Введенное название не соотвествует требуемому формату.' if name !~ TITLE_FORMAT
     true
   end
-
 end

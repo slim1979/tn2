@@ -1,5 +1,5 @@
 module StationMethods
-  private
+  # private
 
   def create_station
     print 'Введите название новой станции: '
@@ -37,7 +37,12 @@ module StationMethods
     else
       station = @stations[index]
       puts "Поезда на станции #{station.name}:"
-      station.self_trains
+      station.each_train do |train|
+        puts "Поезд \'#{train.id}\' --> #{train.type}, вагонов: #{train.vans.count}"
+        train.each_van do |van|
+          van_info_according_to_kind(van)
+        end
+      end
     end
   end
 

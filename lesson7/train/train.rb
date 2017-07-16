@@ -2,8 +2,8 @@ class Train
   include Manufacturer
   include ObjectValidation
 
-  attr_accessor :route, :id
-  attr_reader :type, :speed, :vans, :move, :vans_type, :was_moved
+  attr_accessor :route, :speed
+  attr_reader :type, :vans, :move, :vans_type, :was_moved, :id
 
   TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
 
@@ -26,7 +26,7 @@ class Train
 
   def speed_up(speed)
     self.speed += speed
-    "Скорость увеличена на #{speed} и равна #{speed}."
+    "Скорость увеличена на #{speed} и равна #{self.speed}."
   end
 
   def speed_down(speed)
@@ -43,14 +43,8 @@ class Train
     'Поезд остановлен.'
   end
 
-  def self_vans
-    vans.each do |van|
-      if van.is_a? PassengerVan
-        puts "\tВагон №#{van.number}. #{van.type}, свободных мест: #{van.free_seats}, продано мест: #{van.solded_seats}"
-      elsif van.is_a? CargoVan
-        puts "\tВагон №#{van.number}. #{van.type}, свободный объем: #{van.free_volume}, занятый объем: #{van.occupied_volume}"
-      end
-    end
+  def each_van
+    vans.each { |van| yield van }
   end
 
   def add_van(van)

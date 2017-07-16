@@ -27,7 +27,7 @@ class Route
     waypoints.each { |station| "#{station.name} " }
   end
 
-  private
+  # private
 
   def validate!
     raise ArgumentError, 'Начальный пункт маршрута не является станцией. Маршрут не создан.' unless start.is_a? Station
