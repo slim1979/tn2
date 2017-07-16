@@ -44,24 +44,25 @@ class Game
     puts '   9. Создать новый поезд'
     puts '  10. Добавить вагоны'
     puts '  11. Отцепить вагоны'
-    puts '  12. Назначить маршрут поезду'
-    puts '  13. Увеличить скорость поезда'
-    puts '  14. Уменьшить скорость поезда'
-    puts '  15. Остановить поезд'
-    puts '  16. Переместить поезд по маршруту'
+    puts '  12. Посмотреть прицепленные вагоны'
+    puts '  13. Назначить маршрут поезду'
+    puts '  14. Увеличить скорость поезда'
+    puts '  15. Уменьшить скорость поезда'
+    puts '  16. Остановить поезд'
+    puts '  17. Переместить поезд по маршруту'
     puts '======================================='
     puts '  0. Выйти из программы'
     choise_exceptions_handling
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
   def choise
     print 'Выберите действие: '
-    @action = gets.to_i
-    case @action
+    action = gets.to_i
+    case action
     when 1
       puts create_station
     when 2
@@ -87,19 +88,18 @@ class Game
     when 11
       puts pre_delete_van
     when 12
-      puts path_assignment
+      train_choise do |exist_train|
+        exist_train.each_van { |van| van_info_according_to_kind van }
+      end
     when 13
-      train_choise
-      choise = 'up'
-      puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      puts path_assignment
     when 14
-      train_choise
-      choise = 'down'
-      puts trains_include?(@id) ? change_speed(@id, choise) : no_such_train(@id)
+      train_choise { |exist_train| change_speed(exist_train, 'up') }
     when 15
-      train_choise
-      puts trains_include?(@id) ? train_stop(@id) : no_such_train(@id)
+      train_choise { |exist_train| change_speed(exist_train, 'down') }
     when 16
+      train_choise { |exist_train| train_stop(exist_train) }
+    when 17
       available_trains
       puts move_train
     when 0
@@ -124,7 +124,7 @@ class Game
   def choise_exceptions_handling
     choise
   rescue StandardError => e
-    puts e.to_s
+    puts e
   end
 
   def didnt_understand_you

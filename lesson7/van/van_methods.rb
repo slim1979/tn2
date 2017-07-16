@@ -1,5 +1,5 @@
 module VanMethods
-  private
+  # private
 
   def create_van
     puts 'Какой вагон Вы хотите создать?'
@@ -10,6 +10,11 @@ module VanMethods
     raise ArgumentError, 'Неверный тип вагона!' unless %w[п г g u].include? type
   rescue ArgumentError => e
     puts_with_effects e.to_s
+  end
+
+  def taken
+    print 'Какой объем хотите занять?: '
+    gets.to_i
   end
 
   def van_number
@@ -52,6 +57,14 @@ module VanMethods
     puts "Грузовой вагон ##{@vans[-1].number} создан"
   end
 
+  def van_info_according_to_kind(van)
+    if van.is_a? PassengerVan
+      puts "  Вагон №#{van.number}. #{van.type}, свободных мест: #{van.free_seats}, продано мест: #{van.solded_seats}"
+    elsif van.is_a? CargoVan
+      puts "  Вагон №#{van.number}. #{van.type}, свободный объем: #{van.free_volume}, занятый объем: #{van.occupied_volume}"
+    end
+  end
+
   def buy_place_in_passenger_van
     if PassengerVan.instances.nil?
       puts 'Сначала надо создать пассажирский вагон'
@@ -75,13 +88,13 @@ module VanMethods
   end
 
   def train_and_van_choise
-    index = trains_map_index exists_train_id
+    index = train_index exists_train_id
     train = @trains[index]
     index = train_vans_index train, exists_van_number
     if train.is_a? PassengerTrain
       train.vans[index].buy_ticket
     elsif train.is_a? CargoTrain
-      train.vans[index].take_volume
+      train.vans[index].take_volume(taken)
     else
       didnt_understand_you
     end

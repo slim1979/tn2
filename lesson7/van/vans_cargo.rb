@@ -12,13 +12,7 @@ class CargoVan < Van
     register_instances
   end
 
-  def volume
-    print 'Какой объем хотите занять?: '
-    gets.to_i
-  end
-
-  def take_volume
-    taken = volume unless free_volume.zero?
+  def take_volume(taken)
     if free_volume.zero?
       'Свободного места в вагоне больше нет.'
     elsif free_volume - taken < 0
