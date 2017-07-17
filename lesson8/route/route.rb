@@ -16,8 +16,8 @@ class Route
     register_instances
   end
 
-  def self.list
-    @list
+  class << self
+    attr_reader :list
   end
 
   def add(station)
