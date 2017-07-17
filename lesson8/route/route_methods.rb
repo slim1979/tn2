@@ -11,23 +11,28 @@ module RouteMethods
     end
   end
 
+  def station_name_is_not_exist(start, finish)
+    if Station.list[start].nil?
+      puts "Станции с названием #{start} не существует. Маршрут не создан."
+    elsif Station.list[finish].nil?
+      puts "Станции с названием #{finish} не существует. Маршрут не создан."
+    end
+  end
+
   def create_route(start, finish)
-    start_station = Station.list[start]
-    finish_station = Station.list[finish]
-    new_route_id = Route.list.empty? ? 1 : Route.list[last].id + 1
-    @routes << Route.new(new_route_id, start_station, finish_station)
+    new_route_id ||= 1
+    new_route_id += 1
+    Route.new(new_route_id, Station.list[start], Station.list[finish])
     puts "Маршрут №#{new_route_id} #{Route.list[new_route_id]} создан"
-  # TypeError выбрасывается тогда, когда пользователь ввел название несуществующей станции,
-  # в результате чего start_station и finish_station равны nil
+  # TypeError drops when start or finish stations is not exist
   rescue TypeError
-    puts "Станции с названием #{start} не существует. Маршрут не создан." if start_station.nil?
-    puts "Станции с названием #{finish} не существует. Маршрут не создан." if finish_station.nil?
+    station_name_is_not_exist(start, finish)
   end
 
   def route_and_waypoints
     index = Route.list.size
     index.times do |route_index|
-      print "Маршрут #{route_index + 1} -> #{Route.list[route_index].waypoints.map(&:name)} \n"
+      puts "Маршрут #{route_index + 1} -> #{route_stations(route_index)}"
     end
   end
 
@@ -36,7 +41,7 @@ module RouteMethods
     route_and_waypoints
     print 'Введите номер маршрута: '
     id = gets.to_i
-    if routes_include?(id)
+    if Route.list[id]
       edit_route(id)
     else
       didnt_understand_you
@@ -58,14 +63,18 @@ module RouteMethods
   def no_such_station_try_again(id, station)
     puts "Нет такой станции - #{station}. Попробуете еще раз? (д/н): "
     answer = gets.strip.chomp.downcase
-    %w[д l].include?(answer) ? add_stations_to_route(id) : 'Ввод отменен пользователем'
+    if %w[д l].include?(answer)
+      add_stations_to_route(id)
+    else
+      'Ввод отменен пользователем'
+    end
   end
 
   def add_stations_to_route(id)
     route = Route.list[id]
     available_stations = @stations - route.waypoints
     if available_stations.empty?
-      'Доступных для добавления в этот маршрут станций нет. Выберите другой маршрут или создайте станции.'
+      'Доступных для добавления в этот маршрут станций нет.'
     else
       print 'Доступные станции: '
       available_stations.each { |station| print "\'#{station.name}\' " }
@@ -83,12 +92,10 @@ module RouteMethods
 
   def delete_stations_from_route(id)
     route = Route.list[id]
-
     puts 'В маршруте есть следующие станции: '
-    puts route_waypoints_array
+    puts route_stations(id)
     print 'Выберите станцию для удаления: '
     station = gets.strip.chomp
-
     if Station.list[station]
       route.delete(Station.list[station])
     else
@@ -96,16 +103,8 @@ module RouteMethods
     end
   end
 
-  def routes_index(id)
-    @routes.map(&:id).index id
-  end
-
   def route_stations(route_index)
-    @routes[route_index].waypoints.map(&:name)
-  end
-
-  def routes_include?(id)
-    @routes.map(&:id).include?(id)
+    Route.list[route_index].waypoints.map(&:name)
   end
 
   def last

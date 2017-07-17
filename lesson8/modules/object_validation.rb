@@ -1,3 +1,4 @@
+# ObjectValidation
 module ObjectValidation
   def valid?
     validate!
