@@ -1,5 +1,5 @@
 module VanMethods
-  private
+  # private
 
   def create_van
     puts 'Какой вагон Вы хотите создать?'
@@ -88,8 +88,7 @@ module VanMethods
   end
 
   def train_and_van_choise
-    index = train_index exists_train_id
-    train = @trains[index]
+    train = Train.find[exists_train_id]
     index = train_vans_index train, exists_van_number
     if train.is_a? PassengerTrain
       train.vans[index].buy_ticket

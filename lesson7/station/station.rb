@@ -7,13 +7,13 @@ class Station
 
   TITLE_FORMAT = /^[a-zа-я0-9]{3,}-?\s?([a-zа-я0-9]+)?$/i
 
-  @list = []
+  @list = {}
 
   def initialize(name)
     @name = name
     validate!
     @trains = []
-    self.class.list << self
+    self.class.list[name] = self
     register_instances
   end
 
@@ -39,7 +39,7 @@ class Station
     trains.each { |train| yield train }
   end
 
-  private
+  # private
 
   def validate!
     raise ArgumentError, 'Введенное название не соотвествует требуемому формату.' if name !~ TITLE_FORMAT
