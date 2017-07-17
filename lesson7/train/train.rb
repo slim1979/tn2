@@ -20,8 +20,8 @@ class Train
     @@list[id] = self
   end
 
-  def self.find(train)
-    @@list[train]
+  def self.find
+    @@list
   end
 
   def speed_up(speed)
@@ -66,8 +66,8 @@ class Train
 
   def delete_van(van)
     if speed.zero? && vans.include?(van)
-      vans.delete(van)
       van.status = 'free'
+      vans.delete(van)
       "Вагон ##{van.number} успешно отцеплен от поезда."
     elsif !speed.zero?
       'Сначала остановите поезд.'

@@ -1,5 +1,5 @@
 module TrainMethods
-  private
+  # private
 
   def available_trains_with_waypoints
     puts 'Нет доступных поездов. ' if @trains.empty?
@@ -33,15 +33,12 @@ module TrainMethods
     available_routes
     unless @trains.empty? || @routes.empty?
       puts 'Введите номер поезда и номер маршрута для него: '
-      index = train_index(exists_train_id)
-      train = @trains[index]
+      train = Train.find[exists_train_id]
 
       index = routes_index(exists_route_id)
       train.route = @routes[index]
 
-      index = stations_index(train.route.waypoints.first)
-      station = @stations[index]
-      message = station.train_arrival(train)
+      message = train.route.waypoints.first.train_arrival(train)
 
       "Маршрут ##{train.route.id} успешно добавлен к поезду #{train.id}. \n" + message
     end
@@ -77,9 +74,8 @@ module TrainMethods
   def new_train_id
     new_train_id_text
     id = gets.strip.chomp
-    not_uniq = trains_include? id
-    raise ArgumentError, 'Такой поезд уже существует!' if not_uniq
-    id unless not_uniq
+    raise ArgumentError, 'Такой поезд уже существует!' if Train.find[id]
+    id unless Train.find[id]
   end
 
   def train_manufacturer
@@ -104,10 +100,7 @@ module TrainMethods
     gets.strip.chomp.downcase
   end
 
-  def move_train
-    id = exists_train_id
-    index = train_index(id)
-    train = @trains[index]
+  def move_train(train)
     choosen_vector = train_moving_vector
     train.move_forward if %w[в d].include?(choosen_vector)
     train.move_backward if %w[н y].include?(choosen_vector)
@@ -118,40 +111,17 @@ module TrainMethods
     puts_with_effects 'Неправильно выбрано направление'
   end
 
-  def pre_add_van
+  def add_van
     puts 'Прицепляем новые вагоны...'
-    available_trains
+    train = choose_train
     puts 'Доступные вагоны:'
     @vans.each { |van| puts "##{van.number}. Тип: #{van.type}, вид: #{van.kind}. " if van.status == 'free' }
-    print 'Введите номер поезда: '
-    id = gets.strip.chomp.downcase
-    print 'Введите номер вагона: '
-    number = gets.to_i
-    if trains_include?(id) && @vans.map(&:number).include?(number)
-      add_van(id, number)
+    index = all_vans_map_index exists_van_number
+    van = @vans[index]
+    if train && van
+      puts train.add_van(van)
     else
       didnt_understand_you
-    end
-  end
-
-  def add_van(id, number)
-    index = @vans.map(&:number).index number
-    van = @vans[index]
-    index = train_index(id)
-    train = @trains[index]
-    train.add_van(van)
-  end
-
-  def pre_delete_van
-    available_trains
-    print 'Введите номер поезда, у которого Вы хотите отцепить вагон: '
-    id = gets.to_i
-    if trains_include?(id)
-      index = train_index(id)
-      train = @trains[index]
-      delete_van(train)
-    else
-      no_such_train
     end
   end
 
@@ -160,20 +130,11 @@ module TrainMethods
       'Вагонов нет. Удалять нечего.'
     else
       puts "Поезд #{train.id}. Тип: #{train.type}, скорость: #{train.speed}, имеет следующие вагоны:"
-      train.vans.each { |van| puts "< Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
-      van_choise(train)
-    end
-  end
-
-  def van_choise(train)
-    print 'Выберите номер вагона для отцепления: '
-    number = gets.to_i
-    if @vans.map(&:number).include?(number)
-      index = @vans.map(&:number).index number
-      van = @vans[index]
+      train.each_van { |van| puts "  < Вагон ##{van.number}, \'#{van.type}\', \'#{van.kind}\' >" }
+      print 'Выберите номер вагона для отцепления: '
+      index = train.vans.map(&:number).index gets.to_i
+      van = train.vans[index]
       train.delete_van(van)
-    else
-      didnt_understand_you
     end
   end
 
@@ -188,14 +149,6 @@ module TrainMethods
     train.stop
   end
 
-  def trains_include?(id)
-    @trains.map(&:id).include?(id)
-  end
-
-  def train_index(id)
-    @trains.map(&:id).index id
-  end
-
   def available_trains
     puts 'Доступные поезда:'
     @trains.each do |train|
@@ -203,14 +156,14 @@ module TrainMethods
     end
   end
 
-  def train_choise
+  def choose_train
     available_trains
     id = exists_train_id
-    train = Train.find(id)
+    train = Train.find[id]
     if train.nil?
       no_such_train(id)
     elsif !block_given?
-      puts train
+      train
     else
       yield train
     end

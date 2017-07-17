@@ -4,13 +4,20 @@ class Route
 
   attr_reader :id, :waypoints, :start, :finish
 
+  @list = {}
+
   def initialize(id, start, finish)
     @id = id
     @start = start
     @finish = finish
     validate!
     @waypoints = [start, finish]
+    self.class.list[id] = self
     register_instances
+  end
+
+  def self.list
+    @list
   end
 
   def add(station)
@@ -27,7 +34,7 @@ class Route
     waypoints.each { |station| "#{station.name} " }
   end
 
-  private
+  # private
 
   def validate!
     raise ArgumentError, 'Начальный пункт маршрута не является станцией. Маршрут не создан.' unless start.is_a? Station

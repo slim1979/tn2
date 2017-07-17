@@ -55,7 +55,7 @@ class Game
     choise_exceptions_handling
   end
 
-  private
+  # private
 
   attr_reader :trains, :stations, :routes, :vans, :result
 
@@ -84,24 +84,23 @@ class Game
     when 9
       puts create_train_exceptions_handling
     when 10
-      puts pre_add_van
+      add_van
     when 11
-      puts pre_delete_van
+      choose_train { |exist_train| puts delete_van(exist_train) }
     when 12
-      train_choise do |exist_train|
-        exist_train.each_van { |van| van_info_according_to_kind van }
+      choose_train do |exist_train|
+        exist_train.each_van { |van| puts van_info_according_to_kind van }
       end
     when 13
       puts path_assignment
     when 14
-      train_choise { |exist_train| change_speed(exist_train, 'up') }
+      choose_train { |exist_train| puts change_speed(exist_train, 'up') }
     when 15
-      train_choise { |exist_train| change_speed(exist_train, 'down') }
+      choose_train { |exist_train| puts change_speed(exist_train, 'down') }
     when 16
-      train_choise { |exist_train| train_stop(exist_train) }
+      choose_train { |exist_train| puts train_stop(exist_train) }
     when 17
-      available_trains
-      puts move_train
+      choose_train { |exist_train| puts move_train(exist_train) }
     when 0
       'Всего хорошего! Приходите еще!'
     end
@@ -117,8 +116,8 @@ class Game
     path_assignment
     create_van
     create_van
-    pre_add_van
-    pre_add_van
+    add_van
+    add_van
   end
 
   def choise_exceptions_handling
