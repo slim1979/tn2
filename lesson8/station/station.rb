@@ -17,8 +17,8 @@ class Station
     register_instances
   end
 
-  def self.list
-    @list
+  class << self
+    attr_reader :list
   end
 
   def train_arrival(train)
