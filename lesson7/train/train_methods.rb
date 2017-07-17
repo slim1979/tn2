@@ -31,19 +31,14 @@ module TrainMethods
   def path_assignment
     available_trains_with_waypoints
     available_routes
-    unless @trains.empty? || @routes.empty?
+    unless Train.list.empty? || Route.list.empty?
       puts 'Введите номер поезда и номер маршрута для него: '
-      train = Train.find[exists_train_id]
-
-      index = routes_index(exists_route_id)
-      train.route = @routes[index]
-
-      message = train.route.waypoints.first.train_arrival(train)
-
-      "Маршрут ##{train.route.id} успешно добавлен к поезду #{train.id}. \n" + message
+      train = Train.list[exists_train_id]
+      train.route = Route.list[exists_route_id]
+      puts train.route.waypoints.first.train_arrival(train)
     end
-  rescue TypeError => e
-    puts e.to_s
+  rescue NoMethodError
+    puts 'Выбранного Вами поезда и/или маршрута не существует. Отмена.'
   end
 
   def create_train_exceptions_handling
@@ -74,8 +69,8 @@ module TrainMethods
   def new_train_id
     new_train_id_text
     id = gets.strip.chomp
-    raise ArgumentError, 'Такой поезд уже существует!' if Train.find[id]
-    id unless Train.find[id]
+    raise ArgumentError, 'Такой поезд уже существует!' if Train.list[id]
+    id unless Train.list[id]
   end
 
   def train_manufacturer
@@ -159,7 +154,7 @@ module TrainMethods
   def choose_train
     available_trains
     id = exists_train_id
-    train = Train.find[id]
+    train = Train.list[id]
     if train.nil?
       no_such_train(id)
     elsif !block_given?

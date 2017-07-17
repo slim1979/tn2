@@ -88,7 +88,7 @@ module VanMethods
   end
 
   def train_and_van_choise
-    train = Train.find[exists_train_id]
+    train = Train.list[exists_train_id]
     index = train_vans_index train, exists_van_number
     if train.is_a? PassengerTrain
       train.vans[index].buy_ticket

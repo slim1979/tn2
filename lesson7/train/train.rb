@@ -20,7 +20,7 @@ class Train
     @@list[id] = self
   end
 
-  def self.find
+  def self.list
     @@list
   end
 
