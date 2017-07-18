@@ -1,10 +1,10 @@
 module StationMethods
-  # private
+  private
 
   def create_station
     print 'Введите название новой станции: '
     name = gets.strip.chomp
-    if @stations.map(&:name).include?(name)
+    if Station.list[name]
       'Станция уже существует. Отмена'
     else
       @stations << Station.new(name)
@@ -15,17 +15,21 @@ module StationMethods
   end
 
   def available_stations
-    if @stations.empty?
+    if Station.list.empty?
       'Список станций пуст. Для начала создайте станцию.'
     else
       puts 'Доступные станции: '
-      puts @stations.map(&:name)
+      puts Station.list.keys
     end
   end
 
   def trains_count
-    puts 'Станции > Поезда на станции'
-    Station.list.each { |_, station| puts "#{station.name} > #{station.trains.count}" }
+    if Station.list.empty?
+      'Не было создано ни одной станции'
+    else
+      puts 'Станции > Поезда на станции'
+      Station.list.each { |_, station| puts "#{station.name} > #{station.trains.count}" }
+    end
   end
 
   def train_vans(train)
@@ -35,13 +39,18 @@ module StationMethods
   end
 
   def station_trains(station)
-    station.each_train do |train|
-      puts "Поезд \'#{train.id}\'-> #{train.type}, вагонов: #{train.vans.count}"
-      train_vans(train)
+    if station.trains.count.zero?
+      'На этой станции нет поездов'
+    else
+      station.each_train do |train|
+        puts "Поезд \'#{train.id}\'-> #{train.type}, вагонов: #{train.vans.count}"
+        train_vans(train)
+      end
     end
   end
 
   def trains_list_on_station
+    trains_count
     print 'Выберите станцию, для которой хотите просмотреть список поездов: '
     name = gets.strip.chomp
     if Station.list[name]
@@ -51,13 +60,5 @@ module StationMethods
     else
       didnt_understand_you
     end
-  end
-
-  def stations_index(station)
-    @stations.index station
-  end
-
-  def stations_names(station)
-    @stations.map(&:name).index station
   end
 end

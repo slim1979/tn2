@@ -1,8 +1,9 @@
 module RouteMethods
-  # private
+  private
 
   def pre_create_route_actions
-    unless @stations.empty?
+    available_stations
+    unless Station.list.empty?
       print 'Введите начальную точку маршрута: '
       start = gets.strip.chomp
       print 'Введите конечную точку маршрута: '
@@ -30,9 +31,8 @@ module RouteMethods
   end
 
   def route_and_waypoints
-    index = Route.list.size
-    index.times do |route_index|
-      puts "Маршрут #{route_index + 1} -> #{route_stations(route_index)}"
+    Route.list.each do |route_index, _route|
+      puts "Маршрут #{route_index} -> #{route_stations(route_index)}"
     end
   end
 
@@ -108,6 +108,6 @@ module RouteMethods
   end
 
   def last
-    Route.list.length
+    Route.list.keys.last
   end
 end

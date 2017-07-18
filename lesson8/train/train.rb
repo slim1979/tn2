@@ -2,10 +2,10 @@ class Train
   include Manufacturer
   include ObjectValidation
 
+  TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
+
   attr_accessor :route, :speed
   attr_reader :type, :vans, :move, :vans_type, :was_moved, :id
-
-  TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
 
   @@list = {}
 

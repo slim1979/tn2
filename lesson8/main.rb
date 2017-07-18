@@ -22,8 +22,6 @@ class Game
 
   def initialize
     @stations = []
-    @routes = []
-    @trains = []
     @vans = []
     fill
   end
@@ -55,61 +53,40 @@ class Game
     choise_exceptions_handling
   end
 
-  # private
+  private
 
-  attr_reader :trains, :stations, :routes, :vans, :result
+  attr_reader :stations, :vans
 
   def choise
     print 'Выберите действие: '
     action = gets.to_i
-    case action
-    when 1
-      puts create_station
-    when 2
-      puts available_stations
-    when 3
-      trains_count
-      trains_list_on_station
-    when 4
-      puts available_stations
-      puts pre_create_route_actions
-    when 5
-      puts pre_edit_route
-    when 6
-      puts create_van
-    when 7
-      puts buy_place_in_passenger_van
-    when 8
-      puts buy_place_in_cargo_van
-    when 9
-      puts create_train_exceptions_handling
-    when 10
-      add_van
-    when 11
-      choose_train { |exist_train| puts delete_van(exist_train) }
-    when 12
-      choose_train do |exist_train|
-        exist_train.each_van { |van| puts van_info_according_to_kind van }
-      end
-    when 13
-      puts path_assignment
-    when 14
-      choose_train { |exist_train| puts change_speed(exist_train, 'up') }
-    when 15
-      choose_train { |exist_train| puts change_speed(exist_train, 'down') }
-    when 16
-      choose_train { |exist_train| puts train_stop(exist_train) }
-    when 17
-      choose_train { |exist_train| puts move_train(exist_train) }
-    when 0
-      'Всего хорошего! Приходите еще!'
-    end
+    do_this = {
+      1 => -> { puts create_station },
+      2 => -> { puts available_stations },
+      3 => -> { puts trains_list_on_station },
+      4 => -> { puts pre_create_route_actions },
+      5 => -> { puts pre_edit_route },
+      6 => -> { puts create_van },
+      7 => -> { puts buy_place_in_passenger_van },
+      8 => -> { puts buy_place_in_cargo_van },
+      9 => -> { puts create_train_exceptions_handling },
+      10 => -> { puts add_van },
+      11 => -> { choose_train { |exist_train| puts delete_van(exist_train) } },
+      12 => -> { choose_train { |exist_train| exist_train.each_van { |van| puts van_info_according_to_kind van } } },
+      13 => -> { puts path_assignment },
+      14 => -> { choose_train { |exist_train| puts change_speed(exist_train, 'up') } },
+      15 => -> { choose_train { |exist_train| puts change_speed(exist_train, 'down') } },
+      16 => -> { choose_train { |exist_train| puts train_stop(exist_train) } },
+      17 => -> { choose_train { |exist_train| puts move_train(exist_train) } },
+      18 => 'Всего хорошего! Приходите еще!'
+    }
+    do_this[action].call
   end
 
   def fill
     create_station
     create_station
-    create_route(Station.list.first, Station.list[last])
+    pre_create_route_actions
     create_passenger_train
     create_cargo_train
     path_assignment
