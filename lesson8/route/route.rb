@@ -38,8 +38,12 @@ class Route
   # private
 
   def validate!
-    raise ArgumentError, 'Начальный пункт маршрута не является станцией. Маршрут не создан.' unless start.is_a? Station
-    raise ArgumentError, 'Конечный пункт маршрута не является станцией. Маршрут не создан.' unless finish.is_a? Station
+    error = [
+      'Начальный пункт маршрута не является станцией. Маршрут не создан.',
+      'Конечный пункт маршрута не является станцией. Маршрут не создан.'
+    ]
+    raise ArgumentError, error[0] unless start.is_a? Station
+    raise ArgumentError, error[1] unless finish.is_a? Station
     true
   end
 end

@@ -20,10 +20,10 @@ module RouteMethods
   end
 
   def create_route(start, finish)
-    new_route_id ||= 1
-    new_route_id += 1
-    Route.new(new_route_id, Station.list[start], Station.list[finish])
-    puts "Маршрут №#{new_route_id} #{Route.list[new_route_id]} создан"
+    route_id ||= 0
+    route_id += 1
+    Route.new(route_id, Station.list[start], Station.list[finish])
+    puts "Маршрут №#{route_id} #{route_stations(route_id)} создан"
   # TypeError drops when start or finish stations is not exist
   rescue TypeError
     station_name_is_not_exist(start, finish)
