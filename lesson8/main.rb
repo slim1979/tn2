@@ -109,7 +109,7 @@ class Game
   def fill
     create_station
     create_station
-    create_route(@stations.first.name, @stations.last.name)
+    create_route(Station.list.first, Station.list[last])
     create_passenger_train
     create_cargo_train
     path_assignment

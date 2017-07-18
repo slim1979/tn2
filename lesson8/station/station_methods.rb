@@ -25,24 +25,31 @@ module StationMethods
 
   def trains_count
     puts 'Станции > Поезда на станции'
-    @stations.each { |station| puts "#{station.name} > #{station.trains.count}" }
+    Station.list.each { |_, station| puts "#{station.name} > #{station.trains.count}" }
+  end
+
+  def train_vans(train)
+    train.each_van do |van|
+      van_info_according_to_kind(van)
+    end
+  end
+
+  def station_trains(station)
+    station.each_train do |train|
+      puts "Поезд \'#{train.id}\'-> #{train.type}, вагонов: #{train.vans.count}"
+      train_vans(train)
+    end
   end
 
   def trains_list_on_station
     print 'Выберите станцию, для которой хотите просмотреть список поездов: '
-    station = gets.strip.chomp
-    index = stations_names(station)
-    if index.nil?
-      didnt_understand_you
+    name = gets.strip.chomp
+    if Station.list[name]
+      station = Station.list[name]
+      puts "Поезда на станции #{name}:"
+      station_trains(station)
     else
-      station = @stations[index]
-      puts "Поезда на станции #{station.name}:"
-      station.each_train do |train|
-        puts "Поезд \'#{train.id}\' --> #{train.type}, вагонов: #{train.vans.count}"
-        train.each_van do |van|
-          van_info_according_to_kind(van)
-        end
-      end
+      didnt_understand_you
     end
   end
 
