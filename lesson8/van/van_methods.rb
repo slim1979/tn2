@@ -1,5 +1,5 @@
 module VanMethods
-  # private
+  private
 
   def create_van
     puts 'Какой вагон Вы хотите создать?'
@@ -65,14 +65,20 @@ module VanMethods
     end
   end
 
+  def van_instances_exists
+    if trains_list_on_station == 'На этой станции нет поездов'
+      'Похоже, поезд еще не прибыл на станцию'
+    elsif trains_list_on_station != 'На этой станции нет поездов'
+      puts 'Выберите станцию.'
+      train_and_van_choise
+    end
+  end
+
   def buy_place_in_passenger_van
     if PassengerVan.instances.nil?
       puts 'Сначала надо создать пассажирский вагон'
     elsif PassengerVan.instances
-      puts 'Выберите станцию.'
-      trains_count
-      trains_list_on_station
-      train_and_van_choise
+      van_instances_exists
     end
   end
 
@@ -80,10 +86,7 @@ module VanMethods
     if CargoVan.instances.nil?
       puts 'Сначала надо создать грузовой вагон'
     elsif CargoVan.instances
-      puts 'Выберите станцию.'
-      trains_count
-      trains_list_on_station
-      train_and_van_choise
+      van_instances_exists
     end
   end
 

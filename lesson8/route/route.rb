@@ -35,7 +35,7 @@ class Route
     waypoints.each { |station| "#{station.name} " }
   end
 
-  # private
+  private
 
   def validate!
     error = [

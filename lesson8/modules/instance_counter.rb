@@ -17,7 +17,7 @@ module InstanceCounter
 
   # module InstanceMethods
   module InstanceMethods
-    # private
+    private
 
     def register_instances
       self.class.increase_counter

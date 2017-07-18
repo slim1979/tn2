@@ -3,9 +3,9 @@ class Station
   include InstanceCounter
   include ObjectValidation
 
-  attr_reader :name, :trains
-
   TITLE_FORMAT = /^[a-zа-я0-9]{3,}-?\s?([a-zа-я0-9]+)?$/i
+
+  attr_reader :name, :trains
 
   @list = {}
 
@@ -39,7 +39,7 @@ class Station
     trains.each { |train| yield train }
   end
 
-  # private
+  private
 
   def validate!
     raise ArgumentError, 'Введенное название не соотвествует требуемому формату.' if name !~ TITLE_FORMAT

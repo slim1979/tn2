@@ -1,20 +1,20 @@
 module TrainMethods
-  # private
+  private
 
   def available_trains_with_waypoints
-    puts 'Нет доступных поездов. ' if @trains.empty?
-    puts 'Доступные поезда: ' unless @trains.empty?
-    @trains.each do |train|
+    puts 'Нет доступных поездов. ' if Train.list.empty?
+    puts 'Доступные поезда: ' unless Train.list.empty?
+    Train.list.each do |_, train|
       puts "Поезд #{train.id}-> #{train.route.waypoints.map(&:name)} " if train.route
       puts "Поезд #{train.id}-> маршрут не назначен " unless train.route
     end
   end
 
   def available_routes
-    puts 'Нет доступных маршрутов. ' if @routes.empty?
-    puts 'Доступные маршруты: ' unless @routes.empty?
-    @routes.each_with_index do |route, route_index|
-      puts "Маршрут #{route.id} -> #{route_stations(route_index)} "
+    puts 'Нет доступных маршрутов. ' if Route.list.empty?
+    puts 'Доступные маршруты: ' unless Route.list.empty?
+    Route.list.each do |route_id, route|
+      puts "Маршрут #{route_id} -> #{route.waypoints.map(&:name)} "
     end
   end
 
@@ -28,15 +28,19 @@ module TrainMethods
     gets.to_i
   end
 
-  def path_assignment
-    available_trains_with_waypoints
-    available_routes
+  def enter_train_id_and_route_number
     unless Train.list.empty? || Route.list.empty?
       puts 'Введите номер поезда и номер маршрута для него: '
       train = Train.list[exists_train_id]
       train.route = Route.list[exists_route_id]
       puts train.route.waypoints.first.train_arrival(train)
     end
+  end
+
+  def path_assignment
+    available_trains_with_waypoints
+    available_routes
+    enter_train_id_and_route_number
   rescue NoMethodError
     puts 'Выбранного Вами поезда и/или маршрута не существует. Отмена.'
   end
@@ -81,13 +85,15 @@ module TrainMethods
   end
 
   def create_passenger_train
-    @trains << PassengerTrain.new(new_train_id, train_manufacturer)
-    puts "Пассажирский поезд #{@trains[-1].id} создан!"
+    id = new_train_id
+    PassengerTrain.new(id, train_manufacturer)
+    puts "Пассажирский поезд #{id} создан!"
   end
 
   def create_cargo_train
-    @trains << CargoTrain.new(new_train_id, train_manufacturer)
-    puts "Грузовой поезд #{@trains[-1].id} создан!"
+    id = new_train_id
+    CargoTrain.new(id, train_manufacturer)
+    puts "Грузовой поезд #{id} создан!"
   end
 
   def train_moving_vector
@@ -146,8 +152,8 @@ module TrainMethods
 
   def available_trains
     puts 'Доступные поезда:'
-    @trains.each do |train|
-      print "Поезд #{train.id}. Тип: #{train.type}, вагонов: #{train.vans.count}, скорость: #{train.speed}.\n"
+    Train.list.each do |_, train|
+      puts "Поезд #{train.id}. Тип: #{train.type}, вагонов: #{train.vans.count}, скорость: #{train.speed}."
     end
   end
 
