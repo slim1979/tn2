@@ -1,8 +1,7 @@
 class Train
+  extend Accessors
   include Manufacturer
-  include ObjectValidation
-
-  TRAIN_ID_FORMAT = /^[a-zа-я0-9]{3}-?[a-zа-я0-9]{2}$/i
+  include Validation
 
   attr_accessor :route, :speed
   attr_reader :type, :vans, :move, :vans_type, :was_moved, :id
@@ -12,7 +11,6 @@ class Train
   def initialize(id, manufacturer)
     @id = id
     @manufacturer = manufacturer
-    validate!
     @vans = []
     @speed = 0
     @move = 0
@@ -129,11 +127,5 @@ class Train
 
   def no_route_yet
     "У поезда #{id} нет назначенного маршрута"
-  end
-
-  def validate!
-    super
-    raise ArgumentError, 'Неверный формат идентификатора / названия' if id !~ TRAIN_ID_FORMAT
-    true
   end
 end

@@ -1,9 +1,7 @@
 class Van
+  extend Accessors
   include Manufacturer
-  include ObjectValidation
-
-  VAN_KIND = /^[a-zа-я0-9]{2,}-?\s?([a-zа-я0-9]+)?$/i
-  VAN_MANUFACTURER = /^[a-zа-я0-9]{3,}$/i
+  include Validation
 
   attr_accessor :number
   attr_reader :type, :kind, :status
@@ -13,15 +11,6 @@ class Van
     @number = number
     @kind = kind
     @manufacturer = manufacturer
-    validate!
     @status = 'free'
-  end
-
-  protected
-
-  def validate!
-    super
-    raise ArgumentError, 'Проверьте правильность заполнения типа вагона' if kind !~ VAN_KIND
-    true
   end
 end
