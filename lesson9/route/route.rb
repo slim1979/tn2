@@ -1,9 +1,14 @@
 # Route
 class Route
+  extend Accessors
   include InstanceCounter
   include ObjectValidation
+  include Validation
 
   attr_reader :id, :waypoints, :start, :finish
+
+  validate :start, :type, Station
+  validate :finish, :type, Station
 
   @list = {}
 
@@ -11,7 +16,6 @@ class Route
     @id = id
     @start = start
     @finish = finish
-    validate!
     @waypoints = [start, finish]
     self.class.list[id] = self
     register_instances
@@ -33,17 +37,5 @@ class Route
 
   def list
     waypoints.each { |station| "#{station.name} " }
-  end
-
-  private
-
-  def validate!
-    error = [
-      'Начальный пункт маршрута не является станцией. Маршрут не создан.',
-      'Конечный пункт маршрута не является станцией. Маршрут не создан.'
-    ]
-    raise ArgumentError, error[0] unless start.is_a? Station
-    raise ArgumentError, error[1] unless finish.is_a? Station
-    true
   end
 end
