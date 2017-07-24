@@ -4,6 +4,10 @@ class PassengerVan < Van
   attr_accessor :free_seats, :solded_seats
   attr_reader :seats
 
+  validate :seats,        :type, Integer
+  validate :kind,         :format, /^[a-zа-я0-9]{2,}-?\s?([a-zа-я0-9]+)?$/i
+  validate :manufacturer, :format, /^[a-zа-я0-9]{3,}$/i
+
   def initialize(number, kind, seats, manufacturer)
     super
     @type = 'пассажирский'

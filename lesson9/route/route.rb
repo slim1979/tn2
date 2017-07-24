@@ -2,7 +2,6 @@
 class Route
   extend Accessors
   include InstanceCounter
-  include ObjectValidation
   include Validation
 
   attr_reader :id, :waypoints, :start, :finish

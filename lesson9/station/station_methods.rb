@@ -1,5 +1,5 @@
 module StationMethods
-  private
+  # private
 
   def create_station
     print 'Введите название новой станции: '

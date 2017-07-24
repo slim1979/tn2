@@ -1,5 +1,6 @@
+require_relative 'modules/validation'
+require_relative 'modules/accessors'
 require_relative 'modules/manufacturer'
-require_relative 'modules/object_validation'
 require_relative 'modules/instance_counter'
 require_relative 'station/station'
 require_relative 'station/station_methods'
@@ -23,7 +24,7 @@ class Game
   def initialize
     @stations = []
     @vans = []
-    fill
+    # fill
   end
 
   def menu
@@ -53,7 +54,7 @@ class Game
     choise_exceptions_handling
   end
 
-  private
+  # private
 
   attr_reader :stations, :vans
 

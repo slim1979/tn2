@@ -15,35 +15,34 @@ module Validation
   end
 
   module InstanceMethods
-    private
+    # private
 
     def validate!
       self.class.validations.each do |validation|
         method = validation[:validation_type]
+        native = validation[:attribute]
         attribute = instance_variable_get("@#{validation[:attribute]}".to_sym)
         args = validation[:args]
-        send method, attribute, args
+        send method, native, attribute, args
       end
     end
 
-    def presence(attribute, _args)
-      raise ArgumentError, 'Значение атрибута не может быть пустым' if attribute.nil? || attribute.empty? || attribute =~ /^\s+$/i
+    def presence(native, attribute, _args)
+      raise ArgumentError, "Значение атрибута #{native} не может быть пустым" if attribute.nil? || attribute.empty? || attribute =~ /^\s+$/i
     end
 
-    def type(attribute, attr_class)
-      raise ArgumentError, "Атрибут #{attribute} не соответствует классу #{attr_class[0]}" unless attribute.is_a? attr_class[0]
+    def type(native, attribute, attr_class)
+      raise ArgumentError, "Атрибут #{native} не соответствует классу #{attr_class[0]}" unless attribute.is_a? attr_class[0]
     end
 
-    def format(attribute, regexp)
-      raise ArgumentError, 'Несоответствие формату' if attribute !~ regexp[0]
+    def format(native, attribute, regexp)
+      raise ArgumentError, "Значение атрибута #{native} не соответствует формату" if attribute !~ regexp[0]
     end
 
     def valid?
-      if validate!
-        true
-      else
-        false
-      end
+      true if validate!
+    rescue StandardError
+      false
     end
   end
 end

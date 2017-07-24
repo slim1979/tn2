@@ -1,5 +1,5 @@
 module RouteMethods
-  private
+  # private
 
   def pre_create_route_actions
     available_stations

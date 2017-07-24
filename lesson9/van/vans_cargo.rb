@@ -4,6 +4,10 @@ class CargoVan < Van
   attr_accessor :free_volume, :occupied_volume
   attr_reader :van_volume
 
+  validate :kind, :format, /^[a-zа-я0-9]{2,}-?\s?([a-zа-я0-9]+)?$/i
+  validate :van_volume, :type, Integer
+  validate :manufacturer, :format, /^[a-zа-я0-9]{3,}$/i
+
   def initialize(number, kind, van_volume, manufacturer)
     super
     @type = 'грузовой'

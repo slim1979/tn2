@@ -1,5 +1,5 @@
 module VanMethods
-  private
+  # private
 
   def create_van
     puts 'Какой вагон Вы хотите создать?'
